@@ -339,6 +339,15 @@ export const QUESTIONS: Question[] = [
     show: (a) => isVehicle(a) || isBusiness(a),
   },
   {
+    id: 'expectedMonthlyReturnFromLoan',
+    tier: 'additional',
+    label: 'Roughly how much extra will this bring in or save you each month?',
+    help: 'What the vehicle, stock, or equipment is expected to earn or save, net of running costs. A rough figure is fine.',
+    type: 'money',
+    movesOutput: 'a separate check: does this loan pay for its own EMI? Shown alongside O1, never added to income.',
+    show: (a) => a.loanIsProductive === true,
+  },
+  {
     id: 'existingLenderRelationship',
     tier: 'additional',
     label: 'Do you already bank with, or have a loan with, a lender you would approach?',

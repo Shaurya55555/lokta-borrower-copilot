@@ -297,7 +297,61 @@ borrower eligibility, never gift it) and all are shown on screen as assumptions.
 
 ---
 
-## 12. What this app does **not** know / do
+## 12a. Productive-loan check (a companion to O1, not one of the four required outputs)
+
+The brief asks additional questions to cover "what the loan will *earn* if it is
+productive." This is answered as its own small, clearly-labelled check, never as
+an input to income or affordability.
+
+| What | Value | Why | Source |
+|---|---|---|---|
+| When shown | Only if `loanIsProductive = true` **and** the borrower gave an expected monthly return | No basis to guess a number the borrower did not give | My judgement |
+| What it computes | `expected return - EMI at the recommended amount` = monthly surplus | Answers "does this specific loan pay for itself" | My judgement |
+| Effect on AMI / ceilings / verdict | **None. Zero.** An expected return is never added to income, never raises a ceiling, never changes the O1 call | An expected return is not guaranteed income; treating it as such would let optimism buy eligibility it has not earned | Brief §"honesty about limits" |
+| Effect on the report | A one-line note strengthening or weakening confidence in the verdict already reached, e.g. "this loan pays for itself" or "it would not, on these numbers" | Gives the borrower one more fact without corrupting the affordability math | My judgement |
+
+This deliberately keeps two questions separate that are easy to conflate: **"can
+the household take on a new EMI at all"** (O1/O2, unaffected by this check) and
+**"would this specific loan be a good bet if the household could"** (this check).
+Anita's scooter can clear this second bar (it would net a small monthly surplus)
+while the app still says don't borrow on the first bar - existing 30%+ debt and
+a fresh bounce mean nothing new should be added regardless of whether the
+scooter itself pencils out. See `RUN_THROUGHS.md`.
+
+---
+
+## 12b. Quote Checker (on-demand, not part of the four scored outputs)
+
+The brief asks the app to let a borrower "compare the lender's quote honestly."
+Rather than a questionnaire field, this is a small on-demand tool shown after the
+report: the borrower types in what a lender actually quoted them (amount, rate,
+tenure, fee, any other disclosed charge), and it is scored against the *same*
+fair band and the *same* all-in-APR formula (`finance.ts: apr()`) used
+everywhere else in the app - never a second pricing model.
+
+| What | Value | Why | Source |
+|---|---|---|---|
+| Comparison basis | The quote's all-in APR vs. this borrower's O3 APR band | Comparing APR to APR, not a lender's nominal rate to a borrower's APR, which would be misleading | Brief §"compare the lender's quote honestly" |
+| Tolerance band edge | ±0.05 percentage points | Avoids the verdict flipping on floating-point noise right at the boundary | My judgement |
+| "Extra cost" figure | Total interest at the quoted rate minus total interest at the **top** of the fair *nominal* band, same amount and tenure | A concrete rupee number is more persuasive in a branch than a percentage-point gap | My judgement |
+| Below-fair-range result | Still shown, flagged to double-check for a teaser rate or an undisclosed charge | A rate that looks too good is itself a signal worth a beat of scepticism | My judgement |
+
+---
+
+## 12c. What is NOT scored / affected by these two additions
+
+- Neither the productive-loan check nor the Quote Checker changes AMI, the
+  lender ceiling, the borrower ceiling, the EMI ceiling, or the O1 verdict.
+  `engine.test.ts` asserts this directly (a ₹50 lakh/month "expected return" on
+  Ravi's loan moves the productive-check surplus and nothing else).
+- Both are visually and structurally separated from O1-O4 in the UI (no
+  O-number, a distinct heading) so they read as *companions* to the four
+  required outputs, not a fifth and sixth output competing for the same 20/20
+  explainability points.
+
+---
+
+## 13. What this app does **not** know / do
 
 - No bureau data. A stated score is trusted as given; an unstated one stays unknown.
 - No live rate feed. Bands in §6 are 2026 indicative judgement calls; a real
@@ -315,8 +369,9 @@ borrower eligibility, never gift it) and all are shown on screen as assumptions.
 
 ---
 
-## 13. Change log
+## 14. Change log
 
 | Date | Change | Rationale |
 |---|---|---|
 | 2026-09-04 | Initial ruleset | Build challenge v1.0 |
+| 2026-09-04 | Added §12a (productive-loan check) and §12b (Quote Checker); wired the previously-unused `expectedMonthlyReturnFromLoan` field into a real, isolated check; removed the unused `offersReceived` field in favour of the Quote Checker | An external review of the build correctly flagged two questionnaire fields that were captured but never read by the engine - a real gap, not a style note |

@@ -30,6 +30,7 @@ function relevantAdditional(a: Answers): (keyof Answers)[] {
   if (a.incomeType === 'salaried') base.push('variablePayShareOfIncome', 'largeEmployer');
   if (a.purpose === 'business_expansion' || a.purpose === 'working_capital' || (a.amountWanted ?? 0) > 500000)
     base.push('collateralType', 'collateralValue');
+  if (a.loanIsProductive) base.push('expectedMonthlyReturnFromLoan');
   if (!a.creditScoreKnown) base.push('creditScore');
   base.push('cardOutstanding', 'existingLenderRelationship');
   return base;
@@ -50,6 +51,7 @@ const WHAT_ANSWER_DOES: Partial<Record<keyof Answers, string>> = {
   upcomingLargeExpense: 'a known big spend ahead lowers what you can safely carry',
   coApplicant: 'a second income can materially raise both ceilings',
   existingLenderRelationship: 'an existing relationship is worth ~0.25 points',
+  expectedMonthlyReturnFromLoan: 'shows whether the loan pays for its own EMI (never added to income)',
 };
 
 const MUST_FIELDS: (keyof Answers)[] = [
@@ -195,6 +197,29 @@ export function assess(a: Answers): Assessment {
       ? buildStopCard(a, ami, obligations, borrower, rate)
       : buildCard(a, productId, recommended, rate, outflow, useThis, routing.alternative?.product);
 
+  // Productive-loan check: does THIS loan pay for itself? Deliberately computed
+  // after everything else and never fed back into AMI/ceilings/verdict - an
+  // expected return is not guaranteed income (RULES §"honesty about limits").
+  let productiveCheck: Assessment['productiveCheck'];
+  if (a.loanIsProductive && a.expectedMonthlyReturnFromLoan !== undefined) {
+    const emiAtThisAmount = outflow.atRecommendedAmount.prudent.emi;
+    const monthlySurplus = roundTo(a.expectedMonthlyReturnFromLoan - emiAtThisAmount, ROUND.emi);
+    const coversEmi = monthlySurplus >= 0;
+    productiveCheck = {
+      expectedMonthlyReturn: a.expectedMonthlyReturnFromLoan,
+      emiAtThisAmount,
+      monthlySurplus,
+      coversEmi,
+      note: coversEmi
+        ? `At ${inr(a.expectedMonthlyReturnFromLoan)}/month expected, this loan covers its own EMI (${inr(
+            emiAtThisAmount,
+          )}) with about ${inr(monthlySurplus)}/month left over. That is a reason to lean "borrow", but it is not counted as income anywhere above - an expected return is not guaranteed, so it never raises what you are allowed to borrow.`
+        : `At ${inr(a.expectedMonthlyReturnFromLoan)}/month expected, this loan does not cover its own EMI (${inr(
+            emiAtThisAmount,
+          )}) - a shortfall of ${inr(Math.abs(monthlySurplus))}/month. The loan may still be worth taking for other reasons, but on these numbers it would not pay for itself, which strengthens caution even where the verdict above is "borrow".`,
+    };
+  }
+
   return {
     income,
     obligations,
@@ -212,6 +237,7 @@ export function assess(a: Answers): Assessment {
     },
     maxAmount,
     rate,
+    productiveCheck,
     outflow,
     card,
   };

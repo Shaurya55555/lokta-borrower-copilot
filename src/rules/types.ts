@@ -60,10 +60,11 @@ export interface Answers {
   coApplicantDocumented?: boolean;
   upcomingLargeExpense?: number;
   loanIsProductive?: boolean;          // will this loan earn money?
+  /** net monthly earning/saving expected from the loan, if productive. Never
+   *  added to assessed income - see productiveCheck on Assessment. */
   expectedMonthlyReturnFromLoan?: number;
   largeEmployer?: boolean;
   existingLenderRelationship?: boolean;
-  offersReceived?: { rate: number; amount: number }[];
   /** high-cost informal/app-loan balances outstanding (APR > 28%) */
   highCostDebtOutstanding?: number;
 }
@@ -135,6 +136,21 @@ export interface Assessment {
 
   /** O3 */
   rate: RateResult;
+
+  /**
+   * Present only when the loan is productive and the borrower gave an expected
+   * return. This is a SEPARATE sanity check, not an income source - it never
+   * feeds AMI, the ceilings, or the verdict. It answers "does this specific
+   * loan pay for itself", which is a different question from "can the
+   * household afford a new EMI at all" (O1/O2 already answer that one).
+   */
+  productiveCheck?: {
+    expectedMonthlyReturn: number;
+    emiAtThisAmount: number;
+    monthlySurplus: number;
+    coversEmi: boolean;
+    note: string;
+  };
 
   /** O4 */
   outflow: {

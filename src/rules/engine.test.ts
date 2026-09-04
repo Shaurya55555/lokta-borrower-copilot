@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { assess } from './engine';
 import { apr, emi } from './finance';
+import { checkQuote } from './quoteCheck';
 import { PERSONAS } from '../personas';
 
 const byId = (id: string) => PERSONAS.find((p) => p.id === id)!.answers;
@@ -62,6 +63,11 @@ describe('Ravi - self-employed, thin file, owns his shop', () => {
   it('verdict lets him borrow (as requested or slightly less)', () => {
     expect(['borrow', 'borrow_less']).toContain(r.verdict.call);
   });
+  it('the productive-loan check shows the stock/vehicle covering its own EMI', () => {
+    expect(r.productiveCheck).toBeDefined();
+    expect(r.productiveCheck!.coversEmi).toBe(true);
+    expect(r.productiveCheck!.monthlySurplus).toBeGreaterThan(0);
+  });
 });
 
 describe('Anita - informal, fresh bounce, 30% app loans', () => {
@@ -77,6 +83,65 @@ describe('Anita - informal, fresh bounce, 30% app loans', () => {
   });
   it('borrower-can-carry is essentially zero', () => {
     expect(r.maxAmount.borrowerCanCarry.point).toBeLessThan(60000);
+  });
+  it('the productive-loan check still runs even though the verdict is "don\'t borrow" - the scooter\'s own economics and the household\'s ability to carry any new debt are separate questions', () => {
+    expect(r.productiveCheck).toBeDefined();
+    expect(r.productiveCheck!.expectedMonthlyReturn).toBeGreaterThan(0);
+  });
+});
+
+describe('productive-loan check never leaks into affordability', () => {
+  it('a huge claimed return does not change AMI, ceilings, or the verdict', () => {
+    const modest = assess(byId('ravi'));
+    const inflated = assess({ ...byId('ravi'), expectedMonthlyReturnFromLoan: 5000000 });
+    expect(inflated.maxAmount.borrowerCanCarry.point).toBe(modest.maxAmount.borrowerCanCarry.point);
+    expect(inflated.outflow.emiCeiling.point).toBe(modest.outflow.emiCeiling.point);
+    expect(inflated.verdict.call).toBe(modest.verdict.call);
+    expect(inflated.productiveCheck!.monthlySurplus).toBeGreaterThan(modest.productiveCheck!.monthlySurplus);
+  });
+  it('is absent when the loan is not marked productive', () => {
+    const r = assess(byId('priya'));
+    expect(r.productiveCheck).toBeUndefined();
+  });
+});
+
+describe('quote checker', () => {
+  const r = assess(byId('priya'));
+  it('flags a quote priced above the fair band, with a positive extra cost', () => {
+    const q = checkQuote(r.rate, {
+      amount: 661000,
+      ratePct: r.rate.nominalBand.high + 5,
+      tenureMonths: 36,
+      feeRupees: 15000,
+      otherChargesRupees: 0,
+    });
+    expect(q.verdict).toBe('above_range');
+    expect(q.extraCostVsFairTop).toBeGreaterThan(0);
+    expect(q.pointsAboveFair).toBeGreaterThan(0);
+  });
+  it('accepts a quote priced inside the fair band', () => {
+    // Zero fees means quote APR == quoted nominal rate (see the finance suite
+    // above), so quoting the midpoint of the fair APR band with no fees lands
+    // squarely inside it.
+    const q = checkQuote(r.rate, {
+      amount: 661000,
+      ratePct: r.rate.aprBand.point,
+      tenureMonths: 36,
+      feeRupees: 0,
+      otherChargesRupees: 0,
+    });
+    expect(q.verdict).toBe('within_range');
+  });
+  it('extra cost vs. the fair band is never negative', () => {
+    const cheap = checkQuote(r.rate, {
+      amount: 661000,
+      ratePct: r.rate.nominalBand.low,
+      tenureMonths: 36,
+      feeRupees: 0,
+      otherChargesRupees: 0,
+    });
+    expect(cheap.extraCostVsFairTop).toBe(0);
+    expect(cheap.extraCostVsFairTop).toBeGreaterThanOrEqual(0);
   });
 });
 

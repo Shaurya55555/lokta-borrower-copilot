@@ -63,6 +63,7 @@ src/
     rate.ts              ← where in the rate band the borrower lands, and the all-in APR of it
     stress.ts            ← income −20% and rate +2pts
     verdict.ts           ← borrow / borrow less / don't borrow, with the one-sentence why
+    quoteCheck.ts         ← on-demand: score an actual lender quote against the fair band
     engine.ts            ← assess(answers) → Assessment. Orchestrates the above. Builds the Card.
     engine.test.ts       ← the finance math + Priya / Ravi / Anita, asserted
   questions/

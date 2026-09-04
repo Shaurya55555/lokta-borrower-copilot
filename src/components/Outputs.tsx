@@ -50,6 +50,36 @@ export function Outputs({ a }: { a: Assessment }) {
         )}
       </section>
 
+      {/* Productive-loan check - a companion to O1, not one of the four required
+          outputs, so it is labelled separately and never given an O-number. */}
+      {a.productiveCheck && (
+        <section className={`card p-4 sm:p-5 ${a.productiveCheck.coversEmi ? 'border-good/30' : 'border-warn/30'} border`}>
+          <p className="font-mono text-[11px] font-semibold uppercase tracking-wide text-muted">
+            Does this loan pay for itself?
+          </p>
+          <div className="mt-2 grid grid-cols-3 gap-3 text-center">
+            <div>
+              <p className="text-[11px] text-muted">Expected return</p>
+              <p className="mt-0.5 text-[16px] font-semibold tabular-nums">
+                {inr(a.productiveCheck.expectedMonthlyReturn)}
+              </p>
+            </div>
+            <div>
+              <p className="text-[11px] text-muted">EMI</p>
+              <p className="mt-0.5 text-[16px] font-semibold tabular-nums">{inr(a.productiveCheck.emiAtThisAmount)}</p>
+            </div>
+            <div>
+              <p className="text-[11px] text-muted">Monthly surplus</p>
+              <p className={`mt-0.5 text-[16px] font-semibold tabular-nums ${a.productiveCheck.coversEmi ? 'text-good' : 'text-bad'}`}>
+                {a.productiveCheck.coversEmi ? '+' : ''}
+                {inr(a.productiveCheck.monthlySurplus)}
+              </p>
+            </div>
+          </div>
+          <p className="mt-3 text-[13px] text-muted">{a.productiveCheck.note}</p>
+        </section>
+      )}
+
       {/* O2 */}
       <Block tag="O2" title="How much you can borrow">
         <div className="grid gap-3 sm:grid-cols-2">

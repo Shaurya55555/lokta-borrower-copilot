@@ -83,26 +83,52 @@ card instead: "I am not signing a sanction letter today," plus the fixes.
 
 ---
 
+## Two companions to the four outputs
+
+Neither of these is one of the scored O1-O4 outputs - they are deliberately
+separate, unnumbered sections in the UI, and neither touches AMI, either
+ceiling, or the verdict (`engine.test.ts` asserts this directly).
+
+- **Does this loan pay for itself?** (`RULES.md` §12a) Shown only when the
+  borrower says the loan is productive and gives an expected monthly return.
+  Compares that return to the EMI at the recommended amount and shows the
+  surplus or shortfall - a second, separate lens from "can the household
+  afford a new EMI at all." Anita's scooter clears this bar even though the
+  household still shouldn't take on new debt right now; the report shows both
+  facts rather than collapsing them into one number.
+- **Quote Checker** (`RULES.md` §12b, `src/rules/quoteCheck.ts`). An on-demand
+  tool below the Negotiation Card: paste in what a lender actually quoted
+  (amount, rate, tenure, fee, any other charge) and it is priced with the exact
+  same `apr()` function used everywhere else, then compared against this
+  borrower's fair APR band, with a rupee figure for what the markup costs over
+  the life of the loan.
+
+Both of these started life as fields captured by the schema (`loanIsProductive`
++ `expectedMonthlyReturnFromLoan`, and a since-removed `offersReceived`) that an
+earlier pass had declared but never actually read anywhere in the engine - a
+real gap an external review caught. Fixing it took the form above rather than
+just wiring the number into income, specifically to avoid the more dangerous
+mistake: letting an unverified expected return quietly buy the borrower more
+eligibility than they actually have.
+
+---
+
 ## What I would build next
 
 1. **Sensitivity view on every number.** The engine already knows which answers
    feed each output. Show it: "your ₹22,000 ceiling would be ₹28,000 if you had
    3 months of savings" - turn the internal `missingAnswers` metadata into a
    visible what-if next to each figure.
-2. **Offer comparison.** The schema has an `offersReceived` field that the engine
-   does not yet use. Let the borrower paste in a lender's actual quote (rate,
-   fee, tenure) and score it against the fair band: "this quote's all-in APR is
-   3.1 points over fair; over 5 years that is ₹1.4 L extra."
-3. **Real product-rate calibration.** The bands in `config.ts` are 2026
+2. **Real product-rate calibration.** The bands in `config.ts` are 2026
    judgement calls. Replace them with a small, dated table sourced from published
    lender rate cards, with a "last verified" stamp shown in the UI.
-4. **A proper FOIR grid per lender archetype** (PSU bank / private bank / NBFC /
+3. **A proper FOIR grid per lender archetype** (PSU bank / private bank / NBFC /
    fintech) instead of one market-average curve, since the same borrower gets
    materially different answers from each.
-5. **Save/share the report** as a signed URL or a PDF, so the borrower can
+4. **Save/share the report** as a signed URL or a PDF, so the borrower can
    actually carry the Card into a branch without the tab open. (Kept out for now
    - "nothing stored" was a deliberate constraint.)
-6. **Regional-language copy.** Anita is the borrower who needs this tool most and
+5. **Regional-language copy.** Anita is the borrower who needs this tool most and
    is least likely to read it in English.
 
 ---

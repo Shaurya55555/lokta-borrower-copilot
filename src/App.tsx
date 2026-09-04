@@ -6,6 +6,7 @@ import { PERSONAS } from './personas';
 import { Field } from './components/Field';
 import { Outputs } from './components/Outputs';
 import { NegotiationCard } from './components/NegotiationCard';
+import { QuoteChecker } from './components/QuoteChecker';
 
 type Stage = 'intro' | 'questions' | 'results';
 
@@ -59,8 +60,19 @@ export default function App() {
 
       {stage === 'intro' && (
         <div className="mt-6 space-y-4">
+          <div className="rounded-md border border-rule bg-paper2 p-4">
+            <p className="font-display text-[18px] text-ink">Before we calculate anything</p>
+            <p className="mt-1.5 text-[14px] text-muted">
+              Let's first figure out whether borrowing makes sense for you. Then we'll work out how
+              much you can safely carry, what a fair rate looks like, and what to say yes to when a
+              lender gives you an offer.
+            </p>
+            <p className="mt-2 text-[12px] font-semibold text-accent">
+              This isn't a loan application. It doesn't touch your credit score.
+            </p>
+          </div>
           <button className="btn-primary w-full" onClick={() => setStage('questions')}>
-            Start - answer about 10 questions
+            Start assessment - about 10 questions
           </button>
           <div>
             <p className="text-[13px] font-semibold text-muted">…or try a sample borrower</p>
@@ -126,6 +138,7 @@ export default function App() {
 
           <Outputs a={result} />
           <NegotiationCard a={result} />
+          <QuoteChecker a={result} />
 
           <section className="card no-print p-4 sm:p-5">
             <button
