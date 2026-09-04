@@ -44,13 +44,28 @@ money".
 | **O3** | Nominal **10.5% – 13.8%** p.a. (centre 12.1%) · All-in APR **12.9% – 16.2%**. | Score 780 puts her near the best-priced end of the personal-loan range; large employer shaves a little more. APR gap over nominal = 2% processing fee + GST + ~1% single-premium insurance, *which is usually optional - refuse it*. |
 | **O4** | EMI ceiling **₹22,000** (band ₹18,700–25,300). On ₹6.61 L: 3 yr → **₹22,000/mo, ₹1,31,000 interest**; 6 yr → ₹13,000/mo, ₹2,72,000 interest. | Ceiling is the lower of lender-allows (₹46,500) and budget-allows (₹22,000). **Stress:** income −20% → FOIR 41%, comfortable. Rate +2 pts → EMI ₹22,638, FOIR 33%, comfortable. |
 
-Confidence: **medium** (must-set + 2 additional; score known, salaried).
+Confidence: **medium** — the app's own words: "You answered 2 of 10 relevant
+extra questions. Answer more from 'tighten these numbers' below to narrow the
+ranges further."
+
+**"Show the math behind 'safely carry'"** (a collapsible trace under O2, same
+numbers as the why-sentence above, as rows instead of a sentence):
+
+| | |
+|---|---:|
+| Assessed monthly income | ₹1,10,000 |
+| − Already committed each month | ₹14,000 |
+| − Rent | ₹28,000 |
+| − Household expenses (floored at subsistence for 0 dependents) | ₹10,000 |
+| − Protected monthly savings (thin emergency buffer) | ₹11,000 |
+| → capped at Discretionary-loan cap (20% of take-home) | ₹22,000 |
+| **Safe new EMI** | **₹22,000** |
 
 ### Negotiation Card
 
-> **Personal loan**
-> I'm asking for **₹6.61 L** · Fair rate **10.5%–13.8% p.a.** · Fair all-in APR
-> **12.9%–16.2%** · My EMI ceiling **₹22,000** · Tenure **3 yrs (not 6)**
+> **My position** — Personal loan
+> I'm asking for **₹6.61 L** · Indicative rate **10.5%–13.8% p.a.** · Indicative
+> all-in APR **12.9%–16.2%** · My EMI ceiling **₹22,000** · Tenure **3 yrs (not 6)**
 >
 > - This is an unsecured loan.
 > - Credit score 780.
@@ -58,7 +73,12 @@ Confidence: **medium** (must-set + 2 additional; score known, salaried).
 > - I will not cross an EMI of ₹22,000. Prefer 3 years over 6.
 > - I am asking for ₹6.61 L, which is what I can carry, not the maximum you will offer.
 >
-> **If the offer's all-in APR is above 17.7% or the EMI above ₹22,000, I walk.**
+> **Walk-away condition:** If the offer's all-in APR is above 17.7% or the EMI
+> above ₹22,000, I walk.
+>
+> **Ask the lender:** all-in APR (not just the rate) · processing fee, GST
+> included? · net amount actually credited · fixed or floating · prepayment
+> charges · is insurance bundled, and can it be declined?
 
 ---
 
@@ -92,18 +112,22 @@ variable-pay share, high-cost-debt balance.
 | # | Output | |
 |---|---|---|
 | **O1** | **Borrow.** | You can borrow **₹15,00,000** - it fits both tests, as a **secured** loan against the shop, not an unsecured business loan. |
-| **O2** | Lender will sanction **~₹20.2 L** (band ₹15.1–25.2 L) · You can safely carry **~₹19.4 L** (band ₹14.5–24.2 L). | **Use the "safely carry" number.** Assessed income ₹45,750 (ITR ₹35,000 + 35% of cash above ITR + half the wife's ₹18,000). After ₹19,150 essentials that leaves ₹26,600 for an EMI ≈ ₹19.4 L over 10 years. |
-| **O3** | Nominal **9.5% – 12.0%** p.a. (centre 11.0%) · All-in APR **9.8% – 12.3%**. | No score, but the loan is secured, so the collateral prices it - only a small thin-file premium, *not* the +3 points an unsecured lender would add. Unsecured, he'd be quoted 18–22%; this is the whole point of routing him to LAP. |
+| **O2** | Lender will sanction **~₹20.2 L** (band ₹15.1–25.2 L) · You can safely carry **~₹19.4 L** (band ₹14.5–24.2 L). | **Use the "safely carry" number.** Assessed income ₹45,800 (ITR ₹35,000 + 35% of cash above ITR + half the wife's ₹18,000). After ₹19,200 essentials that leaves ₹26,600 for an EMI ≈ ₹19.4 L over 10 years. |
+| **O3** | Nominal **9.5% – 12.0%** p.a. (centre 11.0%) · All-in APR **9.8% – 12.3%**. | No score, but the loan is secured, so the collateral prices it - only a small thin-file premium, *not* the +3 points an unsecured lender would add. This is roughly half of the ~15–26% band `config.ts` assigns an *unsecured* business loan - the whole point of routing him to LAP. (Note: "roughly half" is the defensible claim - a specific point figure like "18–22%" is not something this app or `config.ts` states anywhere; treat any such number as illustrative shorthand, not a sourced claim.) |
 | **O4** | EMI ceiling **₹22,900**. On ₹15 L: 10 yr → ₹20,600/mo, ₹9,74,000 interest; 15 yr → ₹17,000/mo, ₹15,60,000 interest. | **Stress:** income −20% → FOIR 56%, **tight**. Rate +2 pts → EMI ₹22,352, FOIR 49%, comfortable. The tight case is why he should take the 10-year term and not let a lender push 15. |
 
 Confidence: **low** (self-employed, no score, cash income unverified - the report
 says so and every band is wide).
 
+Productive-loan check (isolated from every number above, never added to
+income): expected return ₹25,000/month vs. EMI ₹20,600 = **+₹4,400/month
+surplus**. Reason to lean "borrow" - not a reason the app lets him borrow more.
+
 ### Negotiation Card
 
-> **Loan against property (LAP)**
-> I'm asking for **₹15 L** · Fair rate **9.5%–12.0% p.a.** · Fair all-in APR
-> **9.8%–12.3%** · My EMI ceiling **₹22,900** · Tenure **10 yrs (not 15)**
+> **My position** — Loan against property (LAP)
+> I'm asking for **₹15 L** · Indicative rate **9.5%–12.0% p.a.** · Indicative
+> all-in APR **9.8%–12.3%** · My EMI ceiling **₹22,900** · Tenure **10 yrs (not 15)**
 >
 > - This is a SECURED loan - price it as one, not as a personal loan.
 > - No bureau score - for a secured loan that barely matters.
@@ -111,7 +135,27 @@ says so and every band is wide).
 > - I will not cross an EMI of ₹22,900. Prefer 10 years over 15.
 > - I am asking for ₹15 L, which is what I can carry, not the maximum you will offer.
 >
-> **If the offer's all-in APR is above 13.8% or the EMI above ₹22,900, I walk.**
+> **Walk-away condition:** If the offer's all-in APR is above 13.8% or the EMI
+> above ₹22,900, I walk.
+>
+> **Ask the lender:** all-in APR (not just the rate) · processing fee, GST
+> included? · net amount actually credited · fixed or floating · prepayment
+> charges · is insurance bundled, and can it be declined?
+
+### Quote Checker, run against this profile
+
+Suppose a lender quotes Ravi ₹15 L at **14.5%**, 120 months, no disclosed fee.
+Checked against his 9.8–12.3% fair APR band:
+
+> **This quote is above your fair range by 2.2%.**
+> Their EMI ₹23,743 · Total repayment over the full tenure ₹28,49,162 ·
+> All-in APR on this quote **14.5%**, against a fair range of 9.8–12.3%.
+> Even against the TOP of that range, this quote costs about **₹2,66,685**
+> more in interest over the life of the loan. Ask the lender to explain the
+> premium, or walk.
+
+(Verified live on the deployed app - this is not a hypothetical calculation,
+it is what `checkQuote()` actually returns for these inputs.)
 
 ---
 
@@ -172,9 +216,14 @@ Confidence: **low**.
   ₹23.7 L vs ₹6.6 L. Ravi: ₹20.2 L vs ₹19.4 L. The app always names which one binds.
 - **"Don't borrow" fires when it should** (Anita) and is unreachable by accident
   for the other two.
-- **Ravi is routed to a secured product** and priced at ~11% instead of the
-  18–22% an unsecured business loan would cost him.
-- **APR is honest about fees** in every case, and the Card gives a bright line to
-  challenge a quote against.
+- **Ravi is routed to a secured product** and priced at ~11%, roughly half of
+  the ~15–26% band `config.ts` assigns an unsecured business loan.
+- **APR is honest about fees** in every case, and the Quote Checker turns that
+  into a rupee number when a real lender quote comes in (Ravi's example above:
+  a 14.5% quote costs him ₹2,66,685 more than the top of his fair band).
+- **Every number is traceable, not just asserted:** O2's "show the math"
+  disclosure (Priya's example above) exposes the same deduction-by-deduction
+  arithmetic that produces the one-sentence "why" - because it is the same
+  computation, not a second explanation invented after the fact.
 - **Adaptive paths:** the salaried engineer, the shopkeeper and the gig worker
   each saw a different question set.
