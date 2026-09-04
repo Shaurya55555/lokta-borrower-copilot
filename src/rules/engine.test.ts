@@ -145,6 +145,76 @@ describe('quote checker', () => {
   });
 });
 
+describe('collateral ceiling actually binds when it is small relative to the ask', () => {
+  it('a modest asset caps the loan below the income-based lender ceiling', () => {
+    // Swap Ravi's ₹45L shop for a ₹10L one - 55% LTV = ₹5.5L, which should now
+    // bite before his income-based FOIR number does (~₹20L).
+    const smallCollateral = assess({ ...byId('ravi'), collateralValue: 1000000 });
+    expect(smallCollateral.product).toBe('lap');
+    expect(smallCollateral.maxAmount.lenderWillSanction.point).toBeLessThan(700000);
+  });
+});
+
+describe('stress cases are real, not decorative', () => {
+  it('both required stress cases are present and distinct', () => {
+    const r = assess(byId('ravi'));
+    expect(r.outflow.stress).toHaveLength(2);
+    expect(r.outflow.stress[0].label).toMatch(/income/i);
+    expect(r.outflow.stress[1].label).toMatch(/rate/i);
+    expect(r.outflow.stress[0].foir).toBeGreaterThan(0);
+    expect(r.outflow.stress[1].foir).toBeGreaterThan(0);
+  });
+  it('a borrower already at the edge shows a stress case that is tight or breaks', () => {
+    const r = assess(byId('anita'));
+    expect(r.outflow.stress.some((s) => s.outcome === 'breaks' || s.outcome === 'tight')).toBe(true);
+  });
+});
+
+describe('existing obligations reduce both ceilings', () => {
+  it("adding an existing EMI lowers Ravi's EMI ceiling", () => {
+    // Priya's ceiling is masked by the 20%-of-income consumption cap, so this
+    // is checked on Ravi, whose ceiling is set by FOIR/affordability directly.
+    const base = assess(byId('ravi'));
+    const withDebt = assess({ ...byId('ravi'), existingEmiTotal: 8000 });
+    expect(withDebt.outflow.emiCeiling.point).toBeLessThan(base.outflow.emiCeiling.point);
+  });
+});
+
+describe('dependents raise the subsistence floor', () => {
+  it('more dependents lowers what a borrower can safely carry', () => {
+    const fewer = assess({ ...byId('ravi'), dependents: 0 });
+    const more = assess({ ...byId('ravi'), dependents: 4 });
+    expect(more.maxAmount.borrowerCanCarry.point).toBeLessThan(fewer.maxAmount.borrowerCanCarry.point);
+  });
+});
+
+describe('informal income haircut is applied exactly as documented', () => {
+  it('assessed income = low end of the range × the documented haircut (RULES §1)', () => {
+    // Anita: 2 years in trade (under the 3-year "established" bar) -> default
+    // haircut of 60% on the low end of her stated range (₹26,000).
+    const r = assess(byId('anita'));
+    expect(r.income.assessedMonthlyIncome).toBeCloseTo(26000 * 0.6, 0);
+  });
+});
+
+describe('a missing must-answer degrades safely rather than crashing', () => {
+  it('produces a zero, non-negative picture when income is omitted, never a crash or a negative number', () => {
+    expect(() => assess({ purpose: 'wedding', amountWanted: 100000 })).not.toThrow();
+    const r = assess({ purpose: 'wedding', amountWanted: 100000 });
+    expect(r.income.assessedMonthlyIncome).toBe(0);
+    expect(r.maxAmount.borrowerCanCarry.point).toBe(0);
+    expect(r.verdict.call).toBe('do_not_borrow');
+  });
+});
+
+describe('a skipped answer applies the exact same conservative default as answering it', () => {
+  it('emergencySavingsMonths omitted behaves identically to emergencySavingsMonths: 0', () => {
+    const omitted = assess(byId('ravi'));
+    const explicitZero = assess({ ...byId('ravi'), emergencySavingsMonths: 0 });
+    expect(omitted.maxAmount.borrowerCanCarry.point).toBe(explicitZero.maxAmount.borrowerCanCarry.point);
+  });
+});
+
 describe('cross-cutting rules', () => {
   it('unknown credit score widens the rate band and is not treated as a low score', () => {
     const withScore = assess({ ...byId('priya') });

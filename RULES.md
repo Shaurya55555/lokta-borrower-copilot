@@ -69,7 +69,7 @@ FOIR numerator = sum of everything below.
 | What | Value | Why | Source |
 |---|---|---|---|
 | Existing loan EMIs | As stated, summed | Directly reduce repayment capacity | Definitional |
-| Credit-card dues | **5%** of stated outstanding balance per month | RBI minimum-due norm is ~5%; treat that as the recurring obligation | RBI card norms / my judgement |
+| Credit-card dues | **5%** of stated outstanding balance per month | ~5% is the minimum-due figure most Indian card issuers quote; treated as the recurring obligation | Industry convention / my judgement (not a cited RBI percentage - do not claim RBI mandates 5% specifically) |
 | Card outstanding unknown but card held | Assume **50%** utilisation of stated limit; if limit unknown, ₹0 and cap confidence | "Unknown is never zero" for risk, but don't invent a number we can't bound | Brief rule 3 + my judgement |
 | Loans ending within 6 months | Still counted at full EMI | Sanction happens now; the obligation is still live | My judgement |
 | Informal / app-loan repayments | Counted; flagged separately as **high-cost debt** if APR > 28% | These crowd out capacity fastest and change the verdict | My judgement |

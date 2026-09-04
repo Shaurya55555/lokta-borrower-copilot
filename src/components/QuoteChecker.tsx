@@ -103,10 +103,14 @@ export function QuoteChecker({ a }: { a: Assessment }) {
             <div className={`mt-4 rounded-md border-2 p-3.5 ${verdictStyle}`}>
               <p className="font-display text-[17px] text-ink">{result.headline}</p>
               <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1.5 text-[13px]">
+                <dt className="text-muted">Sanctioned amount</dt>
+                <dd className="text-right font-semibold tabular-nums">{inr(result.sanctionedAmount)}</dd>
+                <dt className="text-muted">Net amount you'd actually receive</dt>
+                <dd className="text-right font-semibold tabular-nums">{inr(result.netDisbursed)}</dd>
                 <dt className="text-muted">Their EMI</dt>
                 <dd className="text-right font-semibold tabular-nums">{inr(result.emi)}</dd>
-                <dt className="text-muted">Net amount you'd receive</dt>
-                <dd className="text-right font-semibold tabular-nums">{inr(result.netDisbursed)}</dd>
+                <dt className="text-muted">Total you'd repay over the full tenure</dt>
+                <dd className="text-right font-semibold tabular-nums">{inr(result.totalRepayment)}</dd>
                 <dt className="text-muted">All-in APR on this quote</dt>
                 <dd className="text-right font-semibold tabular-nums">{pct(result.apr)}</dd>
                 <dt className="text-muted">Your fair APR range</dt>
@@ -114,6 +118,11 @@ export function QuoteChecker({ a }: { a: Assessment }) {
                   {pct(a.rate.aprBand.low)}-{pct(a.rate.aprBand.high)}
                 </dd>
               </dl>
+              <p className="mt-2 text-[12px] text-muted">
+                Sanctioned amount is what the lender approves. Net received is less, once fees are
+                taken out upfront. Total repayment is every EMI added up - the true cost of saying
+                yes. APR folds all three into one comparable number.
+              </p>
               <p className="mt-2 text-[13px]">{result.note}</p>
             </div>
           )}

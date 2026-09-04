@@ -17,8 +17,12 @@ export interface QuoteInput {
 export type QuoteVerdict = 'within_range' | 'above_range' | 'below_range';
 
 export interface QuoteCheckResult {
+  /** what the lender sanctions - i.e. the amount typed in, echoed back for the apples-to-apples table */
+  sanctionedAmount: number;
   emi: number;
   netDisbursed: number;
+  /** every EMI added up over the full tenure - the total cash that leaves the borrower's account */
+  totalRepayment: number;
   apr: number;
   verdict: QuoteVerdict;
   /** percentage points the quote's APR sits above the top of the fair band (0 if not above) */
@@ -83,8 +87,10 @@ export function checkQuote(fair: RateResult, q: QuoteInput): QuoteCheckResult {
   }
 
   return {
+    sanctionedAmount: q.amount,
     emi: quoteEmi,
     netDisbursed,
+    totalRepayment: quoteEmi * q.tenureMonths,
     apr: quoteApr,
     verdict,
     pointsAboveFair,
