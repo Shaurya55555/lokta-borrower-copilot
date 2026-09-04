@@ -230,7 +230,7 @@ what smaller/secured alternative exists, when to re-check) - never a dead end.
 | Trigger | Recommended amount |
 |---|---|
 | Requested > `min(lender, borrower)` safe principal by > **10%** | The `min(...)` safe principal |
-| Requested ≤ lender max but > borrower safe principal | The borrower safe principal, with the gap named |
+| Requested ≤ lender ceiling but > borrower safe principal | The borrower safe principal, with the gap named |
 | FOIR fine but emergency savings < **2 months** | Smaller amount that keeps EMI ≤ 15% of AMI, plus "build a buffer first" |
 | Non-productive purpose stretching FOIR past **45%** | Amount that lands FOIR at 40% |
 
@@ -253,7 +253,7 @@ years."*
 
 | What | Value | Why | Source |
 |---|---|---|---|
-| Recommended EMI ceiling | `min(lender max EMI, borrower safe EMI)` | The binding constraint | §§3–4 |
+| Recommended EMI ceiling | `min(lender ceiling EMI, borrower safe EMI)` | The binding constraint | §§3–4 |
 | EMI formula | Standard reducing-balance: `E = P·r·(1+r)^n / ((1+r)^n − 1)`, `r` = monthly rate, `n` = months | Universal | Definitional |
 | Prudent tenure default | Home 15y · LAP 10y · Personal 3y · Business 3y · Gold 1y · Vehicle 3y · EV 3y | Minimise lifetime interest; the app shows the longer option too | My judgement |
 | Tenure trade-off shown | For the recommended amount, show EMI + total interest at **prudent** vs **maximum** tenure | Longer tenure lowers EMI but can *double* interest - the borrower must see both | Brief (O4) |

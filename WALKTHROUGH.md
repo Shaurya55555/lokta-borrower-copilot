@@ -150,3 +150,24 @@ eligibility than they actually have.
 - **Handling every income edge case** (pensioners, NRIs, agricultural income,
   multiple co-applicants). The haircut-and-floor framework extends to them, but
   they are not in the three borrowers and each needs its own justified numbers.
+
+---
+
+## Validation and iteration
+
+45 automated tests cover the finance math, adaptive question visibility,
+affordability ceilings, stress cases, all three personas, and quote analysis -
+not just arithmetic checks.
+
+Three review passes were used deliberately to challenge the build before
+submitting it: domain-logic correctness, source attribution and numeric
+precision, and explainability. Each pass's findings were fixed in the actual
+code and re-verified against the deployed app, not just noted - full history
+in `git log`. The last review found the "Show the math" trace should exist;
+it turned out the engine already computed that breakdown internally to build
+its one-sentence explanations and simply hadn't returned it, so surfacing it
+took no new architecture, only a return statement and a render.
+
+Final check before submission: a fresh `git clone` of the public repo into an
+empty folder, then `npm install && npm test && npx tsc -b && npm run build`
+from nothing - the same five minutes an evaluator gets. Clean.
