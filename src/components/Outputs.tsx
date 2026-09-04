@@ -38,6 +38,7 @@ export function Outputs({ a }: { a: Assessment }) {
         </div>
         <p className="mt-2 font-display text-[20px] leading-snug text-ink">{a.verdict.headline}</p>
         <p className="mt-1.5 text-[14px] text-muted">{a.verdict.why}</p>
+        <p className="mt-1.5 text-[12px] italic text-muted">{a.confidenceWhy}</p>
         {a.verdict.constructivePath && (
           <ul className="mt-3 space-y-1.5 border-t border-rule pt-3 text-[14px]">
             {a.verdict.constructivePath.map((s, i) => (
@@ -102,6 +103,33 @@ export function Outputs({ a }: { a: Assessment }) {
           <b>Use the {a.maxAmount.useThis === 'borrower' ? '"safely carry"' : 'lender'} number.</b>{' '}
           {a.maxAmount.why}
         </p>
+        {a.maxAmount.borrowerTrace.length > 0 && (
+          <details className="mt-2 text-[13px]">
+            <summary className="cursor-pointer select-none font-semibold text-accent">
+              Show the math behind "safely carry"
+            </summary>
+            <div className="mt-2 space-y-1 rounded-md border border-rule p-3">
+              {a.maxAmount.borrowerTrace.map((row, i) => (
+                <div
+                  key={i}
+                  className={`flex justify-between gap-3 tabular-nums ${
+                    row.kind === 'result'
+                      ? 'mt-1 border-t border-rule pt-1.5 font-semibold text-ink'
+                      : row.kind === 'cap'
+                        ? 'font-semibold text-warn'
+                        : 'text-muted'
+                  }`}
+                >
+                  <span>
+                    {row.kind === 'deduction' ? '− ' : row.kind === 'cap' ? '→ capped at ' : ''}
+                    {row.label}
+                  </span>
+                  <span>{inr(Math.abs(row.amount))}</span>
+                </div>
+              ))}
+            </div>
+          </details>
+        )}
       </Block>
 
       {/* O3 */}

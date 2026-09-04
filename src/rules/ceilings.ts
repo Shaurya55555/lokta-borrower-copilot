@@ -24,6 +24,13 @@ export interface Ceiling {
   maxPrincipal: number;
   tenureMonths: number;
   bindingReason: string;
+  /** Step-by-step trace from income to the final EMI ceiling - populated by
+   *  borrowerCeiling() only. The brief asks for one-sentence traceability
+   *  (bindingReason already gives that); this is the same numbers broken into
+   *  rows for a borrower who wants to see, not just read, where a figure
+   *  came from. Nothing here is new data - it was already computed and
+   *  discarded before this field existed. */
+  trace?: { label: string; amount: number; kind: 'start' | 'deduction' | 'cap' | 'result' }[];
 }
 
 /** §3 - what a lender will likely sanction. Optimistic end: max tenure, mid rate. */
@@ -141,5 +148,19 @@ export function borrowerCeiling(
       maxPrincipal,
     )}.`;
 
-  return { maxNewEmi: safeEmi, maxPrincipal, tenureMonths, bindingReason };
+  const trace: Ceiling['trace'] = [
+    { label: 'Assessed monthly income', amount: ami, kind: 'start' },
+    ...deductions.map((d) => ({ label: d.label, amount: -d.amount, kind: 'deduction' as const })),
+  ];
+  if (capNote) {
+    const capAmount = (a.netMonthlyIncome ?? ami) * AFFORDABILITY.consumptionEmiCapOfIncome;
+    trace.push({
+      label: `Discretionary-loan cap (${Math.round(AFFORDABILITY.consumptionEmiCapOfIncome * 100)}% of take-home)`,
+      amount: capAmount,
+      kind: 'cap',
+    });
+  }
+  trace.push({ label: 'Safe new EMI', amount: safeEmi, kind: 'result' });
+
+  return { maxNewEmi: safeEmi, maxPrincipal, tenureMonths, bindingReason, trace };
 }

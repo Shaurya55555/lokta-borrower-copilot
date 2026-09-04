@@ -194,8 +194,9 @@ answered).
 ## 7. All-in APR (RBI-style)
 
 The nominal rate is not the price. APR folds in the **processing fee**, **GST on
-that fee (18%)**, and **mandatory loan-protection insurance** where the product
-typically bundles it.
+that fee (18%)**, and **loan-protection insurance** where the product bundles
+it - which, per §7 below, is usually optional and the app tells the borrower
+to ask the lender to drop it.
 
 | What | Value | Why | Source |
 |---|---|---|---|

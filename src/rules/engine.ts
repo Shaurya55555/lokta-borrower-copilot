@@ -139,6 +139,7 @@ export function assess(a: Answers): Assessment {
             lender.maxPrincipal,
           )}, but that is their risk appetite, not your safety margin.`
         : `Use the lender number here - it is the tighter of the two. ${lender.bindingReason}`,
+    borrowerTrace: borrower.trace ?? [],
   };
 
   // O4 — for "don't borrow" there is no recommended amount, so we still show the
@@ -185,9 +186,15 @@ export function assess(a: Answers): Assessment {
   };
 
   // Missing answers + assumptions
-  const missingAnswers = relevantAdditional(a)
+  const relevant = relevantAdditional(a);
+  const answeredCount = relevant.filter((k) => a[k] !== undefined).length;
+  const missingAnswers = relevant
     .filter((k) => a[k] === undefined)
     .map((k) => ({ field: String(k), wouldDo: WHAT_ANSWER_DOES[k] ?? 'tightens one of the ranges' }));
+
+  const confidenceWhy = !a.creditScoreKnown
+    ? `You answered ${answeredCount} of ${relevant.length} relevant extra questions, and your credit score is unknown - both widen every range above.`
+    : `You answered ${answeredCount} of ${relevant.length} relevant extra questions. Answer more from "tighten these numbers" below to narrow the ranges further.`;
 
   const assumptionsUsed: string[] = [];
   if (a.emergencySavingsMonths === undefined) assumptionsUsed.push('Emergency savings assumed 0 months (conservative).');
@@ -234,6 +241,7 @@ export function assess(a: Answers): Assessment {
     productLabel: productLabel(productId),
     routingWhy: routing.why + (routing.alternative ? ' ' + routing.alternative.why : ''),
     confidence,
+    confidenceWhy,
     missingAnswers,
     assumptionsUsed,
     verdict: {

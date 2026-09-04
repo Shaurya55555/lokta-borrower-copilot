@@ -114,6 +114,8 @@ export interface Assessment {
   routingWhy: string;
 
   confidence: Confidence;
+  /** One sentence: how many relevant extra questions were answered, and what's still widening the ranges. */
+  confidenceWhy: string;
   missingAnswers: { field: string; wouldDo: string }[];
   assumptionsUsed: string[];
 
@@ -132,6 +134,10 @@ export interface Assessment {
     useThis: 'lender' | 'borrower';
     amount: Range;
     why: string;
+    /** Step-by-step: income, each deduction, the discretionary cap if it
+     *  binds, then the resulting safe EMI. Same numbers as `why`, as rows
+     *  instead of a sentence. */
+    borrowerTrace: { label: string; amount: number; kind: 'start' | 'deduction' | 'cap' | 'result' }[];
   };
 
   /** O3 */

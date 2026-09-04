@@ -26,7 +26,9 @@ export function NegotiationCard({ a }: { a: Assessment }) {
       <h2 className="mt-2 font-display text-[22px] text-ink">{stop ? 'Before I sign anything' : c.product}</h2>
 
       {!stop && (
-        <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-[14px]">
+        <>
+        <p className="mt-3 text-[12px] font-semibold uppercase tracking-wide text-muted">My position</p>
+        <dl className="mt-1.5 grid grid-cols-2 gap-x-4 gap-y-2 text-[14px]">
           <dt className="text-muted">I'm asking for</dt>
           <dd className="text-right font-semibold tabular-nums">{c.amount}</dd>
           <dt className="text-muted">Indicative rate</dt>
@@ -38,6 +40,7 @@ export function NegotiationCard({ a }: { a: Assessment }) {
           <dt className="text-muted">Tenure</dt>
           <dd className="text-right font-semibold tabular-nums">{c.tenure}</dd>
         </dl>
+        </>
       )}
 
       <ul className="mt-4 space-y-2 border-t border-rule pt-3 text-[14px]">
@@ -49,7 +52,8 @@ export function NegotiationCard({ a }: { a: Assessment }) {
         ))}
       </ul>
 
-      <p className="mt-4 rounded-md bg-accent-soft p-3 text-[14px] font-semibold text-accent">
+      <p className="mt-4 text-[12px] font-semibold uppercase tracking-wide text-muted">Walk-away condition</p>
+      <p className="mt-1.5 rounded-md bg-accent-soft p-3 text-[14px] font-semibold text-accent">
         {c.walkAwayLine}
       </p>
 

@@ -215,6 +215,39 @@ describe('a skipped answer applies the exact same conservative default as answer
   });
 });
 
+describe('the borrower-ceiling trace is real, not decorative', () => {
+  it('starts at assessed income, ends at the safe EMI, and the steps actually sum to it', () => {
+    const r = assess(byId('priya'));
+    const trace = r.maxAmount.borrowerTrace;
+    expect(trace[0].kind).toBe('start');
+    expect(trace[trace.length - 1].kind).toBe('result');
+    expect(trace[0].amount).toBeCloseTo(r.income.assessedMonthlyIncome, 0);
+    const runningTotal = trace.slice(0, -1).reduce((sum, row) => sum + row.amount, 0);
+    // the last non-result row is either the plain running total or, if a cap
+    // fired, the cap amount itself - either way it must equal the final result
+    const lastBeforeResult = trace[trace.length - 2];
+    const effectiveTotal = lastBeforeResult.kind === 'cap' ? lastBeforeResult.amount : runningTotal;
+    expect(effectiveTotal).toBeCloseTo(trace[trace.length - 1].amount, 0);
+  });
+  it("includes the discretionary cap as its own row when it binds (Priya's case)", () => {
+    const r = assess(byId('priya'));
+    expect(r.maxAmount.borrowerTrace.some((row) => row.kind === 'cap')).toBe(true);
+  });
+  it('has no cap row for a productive loan where the cap never applies (Ravi)', () => {
+    const r = assess(byId('ravi'));
+    expect(r.maxAmount.borrowerTrace.some((row) => row.kind === 'cap')).toBe(false);
+  });
+});
+
+describe('confidence explanation names a real, checkable count', () => {
+  it('the count of answered extra questions in confidenceWhy is internally consistent', () => {
+    const r = assess(byId('ravi'));
+    const [, answered, total] = r.confidenceWhy.match(/answered (\d+) of (\d+)/) ?? [];
+    expect(Number(answered)).toBeLessThanOrEqual(Number(total));
+    expect(Number(total)).toBeGreaterThan(0);
+  });
+});
+
 describe('cross-cutting rules', () => {
   it('unknown credit score widens the rate band and is not treated as a low score', () => {
     const withScore = assess({ ...byId('priya') });
