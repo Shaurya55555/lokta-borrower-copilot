@@ -1,8 +1,16 @@
-import { DEFAULTS, PRODUCTS, VERDICT, type ProductId } from './config';
+import { DEFAULTS, PRODUCTS, ROUND, VERDICT, type ProductId } from './config';
+import { roundTo } from './finance';
 import type { Answers, Obligations, StressCase, Verdict } from './types';
 import type { Ceiling } from './ceilings';
 
-const inr = (n: number) => '₹' + Math.round(n).toLocaleString('en-IN');
+const inrRaw = (n: number) => '₹' + Math.round(n).toLocaleString('en-IN');
+/** A loan-principal-scale figure, rounded to the nearest ₹1,000 - the model's
+ *  own confidence bands move in double digits of percent, so stating a
+ *  six-figure amount to the nearest rupee is a false precision the app
+ *  doesn't actually have. */
+const inr = (n: number) => inrRaw(roundTo(n, ROUND.principal));
+/** A monthly-figure-scale (EMI, income) number, rounded to the nearest ₹100. */
+const inrM = (n: number) => inrRaw(roundTo(n, ROUND.emi));
 
 export interface VerdictResult {
   call: Verdict;
@@ -36,7 +44,7 @@ export function decideVerdict(
   const dnb: string[] = [];
   if (borrower.maxNewEmi <= 0)
     dnb.push(
-      `After rent, essentials and what you already owe, there is nothing left for a new EMI - ${inr(
+      `After rent, essentials and what you already owe, there is nothing left for a new EMI - ${inrM(
         ami,
       )} of income is fully spoken for.`,
     );
@@ -141,7 +149,7 @@ function buildConstructivePath(
   }
   if (borrower.maxNewEmi > 0) {
     path.push(
-      `The most you could responsibly service is about ${inr(
+      `The most you could responsibly service is about ${inrM(
         borrower.maxNewEmi,
       )}/month - roughly ${inr(borrower.maxPrincipal)}. Treat that as a hard ceiling, not a target.`,
     );

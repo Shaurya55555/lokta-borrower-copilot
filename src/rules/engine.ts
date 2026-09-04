@@ -9,7 +9,14 @@ import { stressCases } from './stress';
 import { decideVerdict } from './verdict';
 import type { Answers, Assessment, Confidence, Obligations, Range } from './types';
 
-const inr = (n: number) => '₹' + Math.round(n).toLocaleString('en-IN');
+const inrRaw = (n: number) => '₹' + Math.round(n).toLocaleString('en-IN');
+/** Loan-principal-scale figure (amounts, total interest), rounded to the
+ *  nearest ₹1,000 - matches the precision the model's own confidence bands
+ *  actually support. Idempotent, so it's safe on values already rounded
+ *  upstream. */
+const inr = (n: number) => inrRaw(roundTo(n, ROUND.principal));
+/** Monthly-figure-scale (EMI, income, a monthly return), nearest ₹100. */
+const inrM = (n: number) => inrRaw(roundTo(n, ROUND.emi));
 const inrShort = (n: number) => {
   if (n >= 10000000) return '₹' + (n / 10000000).toFixed(2).replace(/\.00$/, '') + ' Cr';
   if (n >= 100000) return '₹' + (n / 100000).toFixed(2).replace(/\.00$/, '') + ' L';
@@ -167,10 +174,10 @@ export function assess(a: Answers): Assessment {
     stress,
     why:
       verdict.call === 'do_not_borrow'
-        ? `On the ${inr(o4Amount)} you asked for, the EMI alone is more than your budget can hold after essentials and existing debt, which is why the answer above is "don't". Your safe EMI ceiling today is ${inr(emiCeiling.point)}.`
-        : `Your EMI ceiling is ${inr(emiCeiling.point)} - the lower of what a lender allows (${inr(
+        ? `On the ${inr(o4Amount)} you asked for, the EMI alone is more than your budget can hold after essentials and existing debt, which is why the answer above is "don't". Your safe EMI ceiling today is ${inrM(emiCeiling.point)}.`
+        : `Your EMI ceiling is ${inrM(emiCeiling.point)} - the lower of what a lender allows (${inrM(
             lenderEmiR,
-          )}) and what your budget allows (${inr(
+          )}) and what your budget allows (${inrM(
             borrowerEmiR,
           )}). Shorter tenure costs you less: ${inr(tiPrudent)} in interest over ${
             recTenurePrudent / 12
@@ -211,12 +218,12 @@ export function assess(a: Answers): Assessment {
       monthlySurplus,
       coversEmi,
       note: coversEmi
-        ? `At ${inr(a.expectedMonthlyReturnFromLoan)}/month expected, this loan covers its own EMI (${inr(
+        ? `At ${inrM(a.expectedMonthlyReturnFromLoan)}/month expected, this loan covers its own EMI (${inrM(
             emiAtThisAmount,
-          )}) with about ${inr(monthlySurplus)}/month left over. That is a reason to lean "borrow", but it is not counted as income anywhere above - an expected return is not guaranteed, so it never raises what you are allowed to borrow.`
-        : `At ${inr(a.expectedMonthlyReturnFromLoan)}/month expected, this loan does not cover its own EMI (${inr(
+          )}) with about ${inrM(monthlySurplus)}/month left over. That is a reason to lean "borrow", but it is not counted as income anywhere above - an expected return is not guaranteed, so it never raises what you are allowed to borrow.`
+        : `At ${inrM(a.expectedMonthlyReturnFromLoan)}/month expected, this loan does not cover its own EMI (${inrM(
             emiAtThisAmount,
-          )}) - a shortfall of ${inr(Math.abs(monthlySurplus))}/month. The loan may still be worth taking for other reasons, but on these numbers it would not pay for itself, which strengthens caution even where the verdict above is "borrow".`,
+          )}) - a shortfall of ${inrM(Math.abs(monthlySurplus))}/month. The loan may still be worth taking for other reasons, but on these numbers it would not pay for itself, which strengthens caution even where the verdict above is "borrow".`,
     };
   }
 
@@ -277,7 +284,7 @@ function buildStopCard(
   const room = Math.max(0, borrower.maxNewEmi);
   bullets.push(
     room > 0
-      ? `The most I could responsibly service is about ${inr(room)}/month - roughly ${inr(
+      ? `The most I could responsibly service is about ${inrM(room)}/month - roughly ${inr(
           Math.max(0, borrower.maxPrincipal),
         )}. Anything above that is a sale, not a fit.`
       : `Right now there is no room for any new EMI at all. A loan today comes straight out of essentials.`,
@@ -294,9 +301,9 @@ function buildStopCard(
         : '₹0 now',
     fairRate: 'n/a',
     fairApr: 'n/a',
-    emiCeiling: room > 0 ? inr(room) + ' absolute max' : 'no room for a new EMI',
+    emiCeiling: room > 0 ? inrM(room) + ' absolute max' : 'no room for a new EMI',
     tenure: 'n/a',
-    walkAwayLine: `Assessed income ${inr(ami)}. After essentials and existing debt there is nothing left for a new EMI - signing one now risks the next bounce.`,
+    walkAwayLine: `Assessed income ${inrM(ami)}. After essentials and existing debt there is nothing left for a new EMI - signing one now risks the next bounce.`,
     bullets,
   };
 }
@@ -325,7 +332,7 @@ function buildCard(
     )}. Anything above ${pct(rate.aprBand.high + 1.5)} APR is a markup.`,
   );
   bullets.push(
-    `I will not cross an EMI of ${inr(outflow.emiCeiling.point)}. Prefer ${
+    `I will not cross an EMI of ${inrM(outflow.emiCeiling.point)}. Prefer ${
       outflow.atRecommendedAmount.prudent.tenureMonths / 12
     } years over ${outflow.atRecommendedAmount.maximum.tenureMonths / 12}.`,
   );
@@ -342,13 +349,13 @@ function buildCard(
     amount: inrShort(recommended),
     fairRate: `${pct(rate.nominalBand.low)}–${pct(rate.nominalBand.high)} p.a.`,
     fairApr: `${pct(rate.aprBand.low)}–${pct(rate.aprBand.high)} all-in`,
-    emiCeiling: inr(outflow.emiCeiling.point),
+    emiCeiling: inrM(outflow.emiCeiling.point),
     tenure: `${outflow.atRecommendedAmount.prudent.tenureMonths / 12} yrs (not ${
       outflow.atRecommendedAmount.maximum.tenureMonths / 12
     })`,
     walkAwayLine: `If the offer's all-in APR is above ${pct(
       rate.aprBand.high + 1.5,
-    )} or the EMI above ${inr(outflow.emiCeiling.point)}, I walk.`,
+    )} or the EMI above ${inrM(outflow.emiCeiling.point)}, I walk.`,
     bullets,
   };
 }

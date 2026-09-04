@@ -8,10 +8,16 @@ import {
   PRODUCTS,
   type ProductId,
 } from './config';
-import { maxPrincipalForEmi } from './finance';
+import { maxPrincipalForEmi, roundTo } from './finance';
+import { ROUND } from './config';
 import type { Answers, Obligations } from './types';
 
-const inr = (n: number) => '₹' + Math.round(n).toLocaleString('en-IN');
+const inrRaw = (n: number) => '₹' + Math.round(n).toLocaleString('en-IN');
+/** Loan-principal-scale figure, rounded to the nearest ₹1,000 - matches the
+ *  precision the app's own confidence bands actually support. */
+const inr = (n: number) => inrRaw(roundTo(n, ROUND.principal));
+/** Monthly-figure-scale (EMI, income, deductions) number, nearest ₹100. */
+const inrM = (n: number) => inrRaw(roundTo(n, ROUND.emi));
 
 export interface Ceiling {
   maxNewEmi: number;
@@ -31,7 +37,7 @@ export function lenderCeiling(
 ): Ceiling {
   const p = PRODUCTS[productId];
   let ceiling = FOIR_BANDS.find((b) => ami <= b.upTo)!.ceiling;
-  const parts: string[] = [`FOIR ceiling ${Math.round(ceiling * 100)}% for income ${inr(ami)}`];
+  const parts: string[] = [`FOIR ceiling ${Math.round(ceiling * 100)}% for income ${inrM(ami)}`];
 
   if (p.secured) {
     ceiling += FOIR_SECURED_BONUS;
@@ -48,9 +54,9 @@ export function lenderCeiling(
 
   let bindingReason = `A lender stops at ${parts.join(', ')}: ${Math.round(
     ceiling * 100,
-  )}% of ${inr(ami)} minus ${inr(obligations.total)} already committed leaves ${inr(
+  )}% of ${inrM(ami)} minus ${inrM(obligations.total)} already committed leaves ${inrM(
     maxNewEmi,
-  )}/month, which is about ${inr(maxPrincipal)} over ${tenureMonths / 12} years.`;
+  )}/month, which is about ${inr(maxPrincipal)} over ${tenureMonths / 12} years. This is our FOIR-style estimate of lender-side capacity, not a specific lender's approval or a guarantee.`;
 
   if (collateralCeiling !== undefined && collateralCeiling < maxPrincipal) {
     maxPrincipal = collateralCeiling;
@@ -120,7 +126,7 @@ export function borrowerCeiling(
     if (cap < safeEmi) {
       capNote = ` A discretionary purpose is additionally capped at ${Math.round(
         AFFORDABILITY.consumptionEmiCapOfIncome * 100,
-      )}% of take-home (${inr(cap)}), which is the tighter limit here.`;
+      )}% of take-home (${inrM(cap)}) - our own borrower-protection guardrail, not a lender rule - which is the tighter limit here.`;
       safeEmi = cap;
     }
   }
@@ -129,7 +135,7 @@ export function borrowerCeiling(
   const maxPrincipal = maxPrincipalForEmi(safeEmi, expectedRatePct, tenureMonths);
 
   const bindingReason =
-    `After ${inr(totalDeductions)} of unavoidable monthly outgo, ${inr(ami)} income leaves ${inr(
+    `After ${inrM(totalDeductions)} of unavoidable monthly outgo, ${inrM(ami)} income leaves ${inrM(
       safeEmi,
     )} for a new EMI.${capNote} Over a sensible ${tenureMonths / 12}-year term that is about ${inr(
       maxPrincipal,

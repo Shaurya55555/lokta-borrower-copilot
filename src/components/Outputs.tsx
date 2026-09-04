@@ -105,7 +105,11 @@ export function Outputs({ a }: { a: Assessment }) {
       </Block>
 
       {/* O3 */}
-      <Block tag="O3" title="A fair interest rate for you">
+      <Block tag="O3" title="An indicative fair-rate range for you">
+        <p className="mb-2 text-[12px] text-muted">
+          An estimate from your profile against modelled market bands - not a lender quote, and
+          not a guarantee any lender will offer it.
+        </p>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <p className="text-[12px] font-semibold uppercase tracking-wide text-muted">Nominal rate band</p>

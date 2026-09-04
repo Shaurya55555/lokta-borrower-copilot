@@ -29,9 +29,9 @@ export function NegotiationCard({ a }: { a: Assessment }) {
         <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-[14px]">
           <dt className="text-muted">I'm asking for</dt>
           <dd className="text-right font-semibold tabular-nums">{c.amount}</dd>
-          <dt className="text-muted">Fair rate</dt>
+          <dt className="text-muted">Indicative rate</dt>
           <dd className="text-right font-semibold tabular-nums">{c.fairRate}</dd>
-          <dt className="text-muted">Fair all-in APR</dt>
+          <dt className="text-muted">Indicative all-in APR</dt>
           <dd className="text-right font-semibold tabular-nums">{c.fairApr}</dd>
           <dt className="text-muted">My EMI ceiling</dt>
           <dd className="text-right font-semibold tabular-nums">{c.emiCeiling}</dd>
@@ -52,6 +52,20 @@ export function NegotiationCard({ a }: { a: Assessment }) {
       <p className="mt-4 rounded-md bg-accent-soft p-3 text-[14px] font-semibold text-accent">
         {c.walkAwayLine}
       </p>
+
+      {!stop && (
+        <div className="mt-4 border-t border-rule pt-3">
+          <p className="text-[12px] font-semibold uppercase tracking-wide text-muted">Ask the lender</p>
+          <ol className="mt-1.5 list-decimal space-y-1 pl-5 text-[13px] marker:text-accent marker:font-semibold">
+            <li>What is the all-in APR, not just the interest rate?</li>
+            <li>What is the processing fee, and does that include GST?</li>
+            <li>What amount will actually be credited to my account, after fees?</li>
+            <li>Is this rate fixed or floating, and how does it reset?</li>
+            <li>What are the prepayment or foreclosure charges?</li>
+            <li>Is any insurance bundled into the loan? Can I decline it?</li>
+          </ol>
+        </div>
+      )}
     </div>
   );
 }
