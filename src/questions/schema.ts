@@ -2,8 +2,15 @@ import type { Answers } from '../rules/types';
 
 /**
  * The question set. Two tiers:
- *  - tier 'must' - the 8–10 questions needed to produce all four outputs.
+ *  - tier 'must' - the core set with no safe default, needed to produce all four
+ *    outputs. Nine questions for almost everyone: a salaried borrower with a
+ *    known score and an informal borrower both answer 9 (the informal borrower's
+ *    weak-month income figure takes the slot the salaried borrower spends on the
+ *    exact credit score).
  *  - tier 'additional' - each one must change an output. `movesOutput` says which.
+ *    Anything with a conservative documented default (rent, household spend, the
+ *    thin-file check) lives here, not in 'must' - a skipped answer substitutes the
+ *    default and widens the band, it never blocks the report.
  *
  * `show(a)` is the adaptive gate: a salaried IT employee and a kirana owner do
  * not see the same list. A question that cannot change any output for THIS
@@ -109,7 +116,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: 'monthlyHouseholdExpenses',
-    tier: 'must',
+    tier: 'additional',
     label: 'Roughly what does your household spend each month to run?',
     help: 'Food, utilities, school fees, transport, rent is asked separately. A rough figure is fine.',
     type: 'money',
@@ -118,7 +125,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: 'rentPaid',
-    tier: 'must',
+    tier: 'additional',
     label: 'Monthly rent you pay (0 if you own / live with family)',
     type: 'money',
     movesOutput: 'O2 amount (borrower-can-carry), O4',
@@ -163,7 +170,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: 'neverBorrowed',
-    tier: 'must',
+    tier: 'additional',
     label: 'Have you ever taken a formal loan from a bank or NBFC?',
     help: 'Different from not knowing your score: this means no credit history exists at all.',
     type: 'boolean',

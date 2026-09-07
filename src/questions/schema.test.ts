@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { visibleQuestions } from './schema';
+import { QUESTIONS, visibleQuestions } from './schema';
 
 /**
  * Question design is worth 20% of the brief's score, and none of it was under
@@ -48,5 +48,22 @@ describe('adaptive question visibility', () => {
     expect(smallPersonal).not.toContain('collateralType');
     expect(largePersonal).toContain('collateralType');
     expect(business).toContain('collateralType');
+  });
+
+  it('keeps the must-set tight: a salaried borrower with a known score answers 9, a thin-file borrower at most 11', () => {
+    const salariedKnownScore = visibleQuestions({ incomeType: 'salaried', creditScoreKnown: true, purpose: 'wedding' })
+      .filter((q) => q.tier === 'must');
+    expect(salariedKnownScore).toHaveLength(9);
+
+    const informalThinFile = visibleQuestions({ incomeType: 'informal', creditScoreKnown: false, purpose: 'business_expansion' })
+      .filter((q) => q.tier === 'must');
+    expect(informalThinFile.length).toBeLessThanOrEqual(11);
+  });
+
+  it('anything with a safe documented default is tier "additional", never "must"', () => {
+    const withDefault = QUESTIONS.filter((q) => q.skipNote);
+    for (const q of withDefault) {
+      expect(q.tier, `${q.id} has a skipNote default, so it must not be tier "must"`).toBe('additional');
+    }
   });
 });

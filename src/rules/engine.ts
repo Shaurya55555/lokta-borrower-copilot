@@ -27,23 +27,28 @@ const pct = (n: number) => n.toFixed(1) + '%';
 /** Additional questions that are relevant given the borrower's situation. */
 function relevantAdditional(a: Answers): (keyof Answers)[] {
   const base: (keyof Answers)[] = [
+    'monthlyHouseholdExpenses',
     'yearsInJobOrTrade',
     'emergencySavingsMonths',
     'pastBounces12m',
     'upcomingLargeExpense',
   ];
+  if (a.purpose !== 'home_purchase') base.push('rentPaid');
   if (a.incomeType === 'self_employed') base.push('incomeEvidence', 'cashIncomeHigh');
   if (a.incomeType === 'informal') base.push('cashIncomeHigh', 'coApplicant');
   if (a.incomeType === 'salaried') base.push('variablePayShareOfIncome', 'largeEmployer');
   if (a.purpose === 'business_expansion' || a.purpose === 'working_capital' || (a.amountWanted ?? 0) > 500000)
     base.push('collateralType', 'collateralValue');
   if (a.loanIsProductive) base.push('expectedMonthlyReturnFromLoan');
-  if (!a.creditScoreKnown) base.push('creditScore');
+  if (!a.creditScoreKnown) base.push('creditScore', 'neverBorrowed');
   base.push('cardOutstanding', 'existingLenderRelationship');
   return base;
 }
 
 const WHAT_ANSWER_DOES: Partial<Record<keyof Answers, string>> = {
+  monthlyHouseholdExpenses: 'replaces a conservative subsistence-floor estimate with your real spend - moves what you can safely carry',
+  rentPaid: 'rent is subtracted from what you can safely carry - skipping it assumes you own your home',
+  neverBorrowed: 'separates a genuine thin file (never borrowed) from just not knowing your score - only the first carries a real rate premium',
   emergencySavingsMonths: 'unlocks or protects the affordability buffer - can swing the amount by 10–20%',
   incomeEvidence: 'raises how much of your cash income counts, widening the amount',
   cashIncomeHigh: 'sets how volatile your income looks, which sets how wide every range is',

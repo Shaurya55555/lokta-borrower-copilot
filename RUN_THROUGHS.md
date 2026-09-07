@@ -21,15 +21,15 @@ EMIs to ₹100.
 
 ### Questions asked
 
-**Must (answered):** purpose = wedding · amount = ₹8,00,000 · earns = salaried ·
-take-home = ₹1,10,000 · existing EMIs = ₹14,000 · rent = ₹28,000 · age = 29 ·
-dependents = 0 · knows score = yes · score = 780.
-**Must (skipped → default):** household expenses → subsistence floor.
+**Must (answered, 9):** purpose = wedding · amount = ₹8,00,000 · earns = salaried ·
+take-home = ₹1,10,000 · existing EMIs = ₹14,000 · age = 29 · dependents = 0 ·
+knows score = yes · score = 780.
 
-**Additional (answered):** years in job = 5 · large employer = yes.
-**Additional (skipped → default):** variable-pay share, card balance/limit, past
-bounces, emergency-savings months, own an asset to pledge, co-applicant,
-upcoming large expense, existing lender relationship.
+**Additional (answered):** rent = ₹28,000 · years in job = 5 · large employer = yes.
+**Additional (skipped → default):** household expenses → subsistence floor,
+variable-pay share, card balance/limit, past bounces, emergency-savings months,
+own an asset to pledge, co-applicant, upcoming large expense, existing lender
+relationship.
 
 **Adaptively hidden** (cannot move an output for a salaried consumption
 borrower): cash-income evidence, high-cost-debt balance, "will this loan earn
@@ -40,7 +40,7 @@ money".
 | # | Output | |
 |---|---|---|
 | **O1** | **Borrow less.** | Borrow about **₹6,61,000**, not ₹8,00,000. *Your ask is above what you can safely carry. After ₹63,000 of unavoidable monthly outgo (car EMI ₹14,000 + rent ₹28,000 + essentials ₹10,000 + protected savings ₹11,000), ₹1,10,000 leaves ₹22,000 for a new EMI, and a wedding is additionally capped at 20% of take-home. Over a sensible 3-year term that is ~₹6,61,000.* |
-| **O2** | Lender will sanction **~₹23,7 L** (band ₹20.2–27.3 L) · You can safely carry **~₹6,6 L** (band ₹5.6–7.6 L). | **Use the "safely carry" number.** A lender would stretch to 55% FOIR; that is their risk appetite, not her safety margin. |
+| **O2** | A lender is likely to sanction **~₹23,7 L** (band ₹20.2–27.3 L) · You can safely carry **~₹6,6 L** (band ₹5.6–7.6 L). | **Use the "safely carry" number.** A lender would stretch to 55% FOIR; that is their risk appetite, not her safety margin. |
 | **O3** | Nominal **10.5% – 13.8%** p.a. (centre 12.1%) · All-in APR **12.9% – 16.2%**. | Score 780 puts her near the best-priced end of the personal-loan range; large employer shaves a little more. APR gap over nominal = 2% processing fee + GST + ~1% single-premium insurance, *which is usually optional - refuse it*. |
 | **O4** | EMI ceiling **₹22,000** (band ₹18,700–25,300). On ₹6.61 L: 3 yr → **₹22,000/mo, ₹1,31,000 interest**; 6 yr → ₹13,000/mo, ₹2,72,000 interest. | Ceiling is the lower of lender-allows (₹46,500) and budget-allows (₹22,000). **Stress:** income −20% → FOIR 41%, comfortable. Rate +2 pts → EMI ₹22,638, FOIR 33%, comfortable. |
 
@@ -91,18 +91,19 @@ numbers as the why-sentence above, as rows instead of a sentence):
 
 ### Questions asked
 
-**Must (answered):** purpose = business expansion · amount = ₹15,00,000 · earns
+**Must (answered, 9):** purpose = business expansion · amount = ₹15,00,000 · earns
 = self-employed · ITR income = ₹35,000/mo · weak month = ₹40,000 · existing EMIs
-= ₹0 · age = 42 · dependents = 0 (wife earns and co-applies) · knows score = no ·
-**ever borrowed = no** (thin file).
-**Must (skipped → default):** household expenses → subsistence floor; rent → ₹0.
+= ₹0 · age = 42 · dependents = 0 (wife earns and co-applies) · knows score = no.
+**Must (skipped → default):** none.
 
-**Additional (answered):** years in trade = 14 · cash-income evidence = none ·
+**Additional (answered):** **ever borrowed = no** (thin file) · years in trade =
+14 · cash-income evidence = none ·
 good month = ₹80,000 · owns asset = commercial property · asset value =
 ₹45,00,000 · already mortgaged = no · co-applicant = yes · co-applicant income =
 ₹18,000 · co-applicant documented = no · loan will earn money = yes.
-**Additional (skipped → default):** card balance/limit, past bounces,
-emergency-savings months, upcoming large expense, existing lender relationship.
+**Additional (skipped → default):** household expenses → subsistence floor, rent
+→ ₹0, card balance/limit, past bounces, emergency-savings months, upcoming large
+expense, existing lender relationship.
 
 **Adaptively hidden** (do not apply to a self-employed borrower): large-employer,
 variable-pay share, high-cost-debt balance.
@@ -112,7 +113,7 @@ variable-pay share, high-cost-debt balance.
 | # | Output | |
 |---|---|---|
 | **O1** | **Borrow.** | You can borrow **₹15,00,000** - it fits both tests, as a **secured** loan against the shop, not an unsecured business loan. |
-| **O2** | Lender will sanction **~₹20.2 L** (band ₹15.1–25.2 L) · You can safely carry **~₹19.4 L** (band ₹14.5–24.2 L). | **Use the "safely carry" number.** Assessed income ₹45,800 (ITR ₹35,000 + 35% of cash above ITR + half the wife's ₹18,000). After ₹19,200 essentials that leaves ₹26,600 for an EMI ≈ ₹19.4 L over 10 years. |
+| **O2** | A lender is likely to sanction **~₹20.2 L** (band ₹15.1–25.2 L) · You can safely carry **~₹19.4 L** (band ₹14.5–24.2 L). | **Use the "safely carry" number.** Assessed income ₹45,800 (ITR ₹35,000 + 35% of cash above ITR + half the wife's ₹18,000). After ₹19,200 essentials that leaves ₹26,600 for an EMI ≈ ₹19.4 L over 10 years. |
 | **O3** | Nominal **9.5% – 12.0%** p.a. (centre 11.0%) · All-in APR **9.8% – 12.3%**. | No score, but the loan is secured, so the collateral prices it - only a small thin-file premium, *not* the +3 points an unsecured lender would add. This is roughly half of the ~15–26% band `config.ts` assigns an *unsecured* business loan - the whole point of routing him to LAP. (Note: "roughly half" is the defensible claim - a specific point figure like "18–22%" is not something this app or `config.ts` states anywhere; treat any such number as illustrative shorthand, not a sourced claim.) |
 | **O4** | EMI ceiling **₹22,900**. On ₹15 L: 10 yr → ₹20,600/mo, ₹9,74,000 interest; 15 yr → ₹17,000/mo, ₹15,60,000 interest. | **Stress:** income −20% → FOIR 56%, **tight**. Rate +2 pts → EMI ₹22,352, FOIR 49%, comfortable. The tight case is why he should take the 10-year term and not let a lender push 15. |
 
@@ -168,17 +169,17 @@ it is what `checkQuote()` actually returns for these inputs.)
 
 ### Questions asked
 
-**Must (answered):** purpose = vehicle · amount = ₹1,50,000 · earns = informal ·
+**Must (answered, 9):** purpose = vehicle · amount = ₹1,50,000 · earns = informal ·
 typical month = ₹26,000 · weak month = ₹26,000 · existing EMIs = ₹0 · age = 35 ·
 dependents = 3 (husband + two children) · knows score = no.
-**Must (skipped → default):** ever borrowed → treated as score-unknown; household
-expenses → subsistence floor; rent → ₹0.
+**Must (skipped → default):** none.
 
 **Additional (answered):** years in trade = 2 · good month = ₹30,000 · past
 bounces (12 mo) = 1 · bounce in last 3 months = yes · emergency-savings months =
 0 · high-cost-debt balance = ₹35,000 · loan will earn money = yes.
-**Additional (skipped → default):** card balance/limit, co-applicant, upcoming
-large expense, existing lender relationship.
+**Additional (skipped → default):** ever borrowed → treated as score-unknown,
+household expenses → subsistence floor, rent → ₹0, card balance/limit,
+co-applicant, upcoming large expense, existing lender relationship.
 
 **Adaptively hidden:** large-employer, variable-pay share, cash-income evidence.
 
@@ -187,7 +188,7 @@ large expense, existing lender relationship.
 | # | Output | |
 |---|---|---|
 | **O1** | **Don't borrow** - not now, and not like this. | *After rent, essentials (₹10,000 + ₹18,000 for three dependents) and the app-loan repayments, there is nothing left for a new EMI; ₹15,600 of assessed income is fully spoken for.* Assessed income = ₹26,000 (low end) × 60% dependable. **Constructive path:** (1) replace the ₹35,000 of 28%+ debt with a gold or consolidation loan at 14–18%; (2) clear the bounce, three clean months; (3) add a co-applicant or wait for income to steady; (4) re-check in 3 months. |
-| **O2** | Lender will sanction **~₹1,34,000** · You can safely carry **₹0**. | **Use the borrower number.** A lender's sanction math would still offer ~₹1.3 L; the household cannot service any of it. |
+| **O2** | A lender is likely to sanction **~₹1,34,000** · You can safely carry **₹0**. | **Use the borrower number.** A lender's sanction math would still offer ~₹1.3 L; the household cannot service any of it. |
 | **O3** | Nominal **7.4% – 11.6%** (EV-scheme band) · All-in APR **14.4% – 18.8%**. | Shown as *what to ask for when she is ready*, not what to take now. A work EV qualifies for green-scheme rates; the wide APR is the flat documentation fee on a tiny principal. Score unknown → band widened, not penalised. |
 | **O4** | EMI ceiling **₹0** - no room for a new EMI. On the ₹1,50,000 she asked for: 3 yr → ₹4,800/mo. | **Stress on the requested loan:** income −20% → FOIR 72%, **breaks**. Rate +2 pts → EMI ₹4,946, FOIR 59%, tight. Even the base case does not fit, which is why O1 is "don't". |
 

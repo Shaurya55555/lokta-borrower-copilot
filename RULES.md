@@ -285,6 +285,8 @@ borrower eligibility, never gift it) and all are shown on screen as assumptions.
 | Question skipped | Assumed value | Direction | Source |
 |---|---|---|---|
 | Household / living expenses | `subsistenceFloor` (§4) | Conservative (higher expense) | My judgement |
+| Rent paid | **₹0** (assumes owned / family home) | Conservative for a renter (real rent only lowers the safe number) | My judgement |
+| Ever borrowed formally (thin-file flag) | Treated as **score-unknown**, not as a genuine thin file - band widens, no thin-file premium | Conservative-bounded (a real thin file is priced worse, so this under-warns rather than over-warns) | My judgement |
 | Emergency savings (months) | **0 months** | Conservative | Brief rule 3 |
 | Credit-card utilisation | **50%** of limit; if no limit given, card ignored + confidence capped | Conservative-bounded | My judgement |
 | Past bounces | **None assumed**, but confidence capped at Medium | Can't invent a bounce; can't fully trust the file either | My judgement |
@@ -293,7 +295,6 @@ borrower eligibility, never gift it) and all are shown on screen as assumptions.
 | Co-applicant income | **₹0** | Conservative | My judgement |
 | Collateral value | **₹0** (no secured routing unless a value is given) | Conservative | My judgement |
 | Upcoming large expense | **None** | Neutral (can't infer) | My judgement |
-| Existing offers received | **None** | Neutral | My judgement |
 | Credit score (salaried, unstated) | Modelled as **unknown**, not a number - band widens ±2.0, no centre penalty | Brief rule 3 | Brief |
 
 ---
@@ -376,3 +377,4 @@ everywhere else in the app - never a second pricing model.
 |---|---|---|
 | 2026-09-04 | Initial ruleset | Build challenge v1.0 |
 | 2026-09-04 | Added §12a (productive-loan check) and §12b (Quote Checker); wired the previously-unused `expectedMonthlyReturnFromLoan` field into a real, isolated check; removed the unused `offersReceived` field in favour of the Quote Checker | An external review of the build correctly flagged two questionnaire fields that were captured but never read by the engine - a real gap, not a style note |
+| 2026-09-08 | Tightened the must-set to 9 questions: moved rent, household spend and the thin-file check to the additional tier (each already has a conservative default in §11, so a skip widens the band, never blocks the report). Softened "what a lender will sanction" to "our estimate of what a lender is likely to sanction" in the verdict text, matching §3 and the O2 label | Keeps the must-set genuinely tight (brief rule on question design) and removes the one place the copy sounded more certain than the model is |

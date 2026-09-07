@@ -89,7 +89,7 @@ export function decideVerdict(
     const binding =
       borrower.maxPrincipal < lender.maxPrincipal
         ? `what you can safely carry (${inr(borrower.maxPrincipal)})`
-        : `what a lender will sanction (${inr(lender.maxPrincipal)})`;
+        : `our estimate of what a lender is likely to sanction (${inr(lender.maxPrincipal)})`;
     return {
       call: 'borrow_less',
       headline: `Borrow about ${inr(safePrincipal)}, not ${inr(requested)}.`,
@@ -121,7 +121,7 @@ export function decideVerdict(
   return {
     call: 'borrow',
     headline: `You can borrow ${inr(requested)} - it fits both tests.`,
-    why: `${inr(requested)} is within both what a lender will sanction (${inr(
+    why: `${inr(requested)} is within both our estimate of what a lender is likely to sanction (${inr(
       lender.maxPrincipal,
     )}) and what you can safely carry (${inr(borrower.maxPrincipal)}), and it survives the stress cases.${cheaperAlt}`,
     recommendedAmount: requested,
