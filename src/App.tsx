@@ -357,13 +357,18 @@ export default function App() {
               >
                 {VERDICT_MINI[result.verdict.call].word}
               </span>
-              <span>
+              <span title={result.maxAmount.why}>
                 <b className="tabular-nums text-ink">
                   {result.verdict.call === 'do_not_borrow'
                     ? '₹0'
                     : inrShort(result.maxAmount.amount.point)}
                 </b>{' '}
-                <span className="text-muted">borrow</span>
+                <span className="text-muted">
+                  borrow
+                  {result.maxAmount.borrowerTrace.some((t) => t.kind === 'cap')
+                    ? ' (held by the 20%-of-income cap)'
+                    : ''}
+                </span>
               </span>
               <span>
                 <b className="tabular-nums text-ink">
