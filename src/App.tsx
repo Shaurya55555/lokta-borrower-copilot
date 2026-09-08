@@ -153,7 +153,7 @@ export default function App() {
               {PERSONAS.map((p) => (
                 <button
                   key={p.id}
-                  className="card block h-full w-full p-3 text-left transition-colors hover:border-accent/40 hover:bg-paper2"
+                  className="card flex h-full w-full flex-col p-3 text-left transition-colors hover:border-accent/40 hover:bg-paper2"
                   onClick={() => loadPersona(p.id)}
                 >
                   <p className="text-[13px] font-semibold text-ink">{p.name}</p>
@@ -200,6 +200,18 @@ export default function App() {
 
       {stage === 'results' && result && (
         <div ref={resultsRef} className="mt-6 space-y-4">
+          {/* Header shown only on the printed / saved-as-PDF version. */}
+          <div className="print-only mb-4 border-b border-black pb-3">
+            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em]">
+              Borrower Copilot · self-assessment
+            </p>
+            <p className="mt-1 text-[13px]">
+              Generated {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}.
+              A borrower-side estimate from self-reported inputs - not a loan application, a credit
+              check, or any lender's offer.
+            </p>
+          </div>
+
           {/* Jump bar - a map of the report, always reachable while scrolling. */}
           <div className="no-print sticky top-0 z-20 -mx-4 border-b border-rule bg-paper/95 px-4 py-2 backdrop-blur">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
@@ -222,6 +234,12 @@ export default function App() {
                 ))}
               </nav>
               <div className="ml-auto flex gap-1.5 text-[12px]">
+                <button
+                  className="rounded-full border border-accent bg-accent-soft px-2.5 py-1 font-semibold text-accent hover:bg-accent hover:text-paper"
+                  onClick={() => window.print()}
+                >
+                  Save as PDF
+                </button>
                 <button
                   className="rounded-full border border-rule px-2.5 py-1 font-semibold text-muted hover:border-accent hover:text-accent"
                   onClick={() => setStage('questions')}
@@ -296,7 +314,7 @@ export default function App() {
           </section>
 
           {result.assumptionsUsed.length > 0 && (
-            <section className="card no-print p-4 text-[13px]">
+            <section className="card p-4 text-[13px]">
               <p className="font-semibold text-ink">Where this report is guessing</p>
               <ul className="mt-1.5 space-y-1 text-muted">
                 {result.assumptionsUsed.map((s, i) => (

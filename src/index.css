@@ -36,5 +36,13 @@
 
 @media print {
   .no-print { display: none !important; }
+  .print-only { display: block !important; }
   body { background: #fff; }
+  @page { margin: 14mm 12mm; }
+  /* keep each report block whole across page breaks where it can fit */
+  section, #negotiation-card { break-inside: avoid; }
+  /* make sure the accent tints and range bars actually render on paper */
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  a[href]::after { content: ''; }
 }
+.print-only { display: none; }
