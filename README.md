@@ -109,10 +109,12 @@ never on its own a demotion. (`RULES.md` §6.2.)
 
 ### Confidence widens with silence
 
-Answer only the ~10 must-questions and every range is wide and labelled low
-confidence. Each additional question is gated on whether it can change an output;
-answering it narrows a specific number, and the report says which. A skipped
-question never narrows anything - the engine substitutes a conservative default
+**Basic** mode asks the ~10 core questions; **Advanced** adds the fine-tuning
+ones up front. Either way, answer only the core set and every range is wide and
+labelled low confidence. Each fine-tuning question is gated on whether it can
+change an output; answering it narrows a specific number, and the report says
+which. A skipped question never narrows anything - the engine substitutes a
+conservative default
 (documented in `RULES.md` §11) and widens.
 
 ### Unknown is not zero

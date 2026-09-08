@@ -12,9 +12,13 @@ outputs and a one-page Negotiation Card. No login, no bureau pull, nothing
 stored. Try `npm run dev` then **"try a sample borrower"** for Priya, Ravi or
 Anita.
 
-The report is live: the four outputs appear as soon as the must-questions are
-answered, and every additional question below them re-runs the assessment and
-visibly tightens a number.
+Two ways in: **Basic** (the ~10 core questions, then the report, which then
+prompts for the rest) or **Advanced** (the core plus the ~10 fine-tuning
+questions up front, for a tight report in one pass). Same engine either way.
+
+The report is live: the four outputs appear as soon as the core questions are
+answered, and every fine-tuning answer re-runs the assessment and visibly
+tightens a number.
 
 ---
 
