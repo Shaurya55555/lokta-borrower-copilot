@@ -17,9 +17,15 @@ function withLabels(q: Question, a: Answers): Question {
 
 export default function App() {
   const [stage, setStage] = useState<Stage>('intro');
+  const [mode, setMode] = useState<'basic' | 'advanced'>('basic');
   const [answers, setAnswers] = useState<Answers>({});
   const [showMore, setShowMore] = useState(true);
   const resultsRef = useRef<HTMLDivElement>(null);
+
+  const startAssessment = (m: 'basic' | 'advanced') => {
+    setMode(m);
+    setStage('questions');
+  };
 
   // On stage change, put the user at the right place instead of leaving them
   // wherever they had scrolled to on the previous screen.
@@ -83,7 +89,7 @@ export default function App() {
         </button>
         {stage !== 'intro' && (
           <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
-            {stage === 'results' ? 'Your report' : 'The basics'}
+            {stage === 'results' ? 'Your report' : mode === 'advanced' ? 'Advanced' : 'Basic'}
           </span>
         )}
       </header>
@@ -107,8 +113,11 @@ export default function App() {
               Four answers from what you tell it. No login, no credit check, nothing stored.
             </p>
             <div className="mt-7 flex flex-col items-center gap-2">
-              <button className="btn-primary px-6" onClick={() => setStage('questions')}>
-                {hasAnswers ? 'Resume where you left off →' : 'Start assessment →'}
+              <button
+                className="btn-primary px-6"
+                onClick={() => (hasAnswers ? setStage('questions') : startAssessment('basic'))}
+              >
+                {hasAnswers ? 'Resume where you left off →' : 'Start - Basic →'}
               </button>
               {hasAnswers ? (
                 <button
@@ -118,7 +127,17 @@ export default function App() {
                   or clear my answers and start fresh
                 </button>
               ) : (
-                <span className="text-[12px] text-muted">about 10 quick questions · around 2 minutes</span>
+                <>
+                  <button
+                    className="text-[12px] font-semibold text-muted hover:text-accent"
+                    onClick={() => startAssessment('advanced')}
+                  >
+                    or start in Advanced mode - answer the fine-tuning questions now
+                  </button>
+                  <span className="mt-1 text-[12px] text-muted">
+                    Basic: ~10 questions, ~2 minutes. Advanced: ~10 more for tighter ranges.
+                  </span>
+                </>
               )}
             </div>
           </div>
@@ -174,14 +193,44 @@ export default function App() {
       {stage === 'questions' && (
         <div className="mt-6">
           <div className="rounded-md bg-paper2 px-3 py-2 text-[13px] text-muted">
-            <b className="text-ink">The basics.</b> Just enough to produce all four answers. You can
-            fine-tune with optional questions on the results page.
+            {mode === 'advanced' ? (
+              <>
+                <b className="text-ink">Advanced.</b> The core questions, then the fine-tuning ones.
+                Every fine-tuning answer narrows a number in the report; skip any and that range just
+                stays wide.
+              </>
+            ) : (
+              <>
+                <b className="text-ink">Basic.</b> Just enough to produce all four answers. You can add
+                the fine-tuning questions afterwards, or{' '}
+                <button
+                  className="font-semibold text-accent underline"
+                  onClick={() => setMode('advanced')}
+                >
+                  switch to Advanced now
+                </button>
+                .
+              </>
+            )}
           </div>
           <div className="mt-2 divide-y divide-rule">
             {mustQs.map((q) => (
               <Field key={q.id} q={withLabels(q, answers)} answers={answers} onChange={setAnswer} />
             ))}
           </div>
+
+          {mode === 'advanced' && additionalQs.length > 0 && (
+            <div className="mt-5">
+              <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
+                Fine-tuning · optional
+              </p>
+              <div className="mt-1 divide-y divide-rule">
+                {additionalQs.map((q) => (
+                  <Field key={q.id} q={withLabels(q, answers)} answers={answers} onChange={setAnswer} />
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="sticky bottom-0 -mx-4 mt-6 flex gap-2 border-t border-rule bg-paper/95 px-4 py-3 backdrop-blur">
             <button className="btn-ghost" onClick={() => setStage('intro')}>
@@ -259,7 +308,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* Prominent "these are wide - tighten them" prompt, above the results. */}
+          {/* After the Basic report: prompt the Advanced (fine-tuning) questions. */}
           {result.missingAnswers.length > 0 && (
             <button
               onClick={() => jump('tighten')}
@@ -268,10 +317,10 @@ export default function App() {
               <span className="text-[20px] leading-none">⟳</span>
               <span>
                 <span className="block text-[14px] font-semibold text-ink">
-                  These are wide ranges - you have answered the basics only.
+                  This is your Basic report - the ranges are wide on purpose.
                 </span>
                 <span className="mt-0.5 block text-[13px] font-semibold text-accent">
-                  Answer {result.missingAnswers.length} more question
+                  Answer {result.missingAnswers.length} Advanced question
                   {result.missingAnswers.length === 1 ? '' : 's'} to tighten every number below ↓
                 </span>
               </span>
@@ -293,7 +342,7 @@ export default function App() {
               onClick={() => setShowMore((s) => !s)}
             >
               <span className="font-display text-[18px] text-ink">
-                Tighten these numbers · {result.missingAnswers.length} question
+                Advanced · tighten these numbers · {result.missingAnswers.length} question
                 {result.missingAnswers.length === 1 ? '' : 's'} left
               </span>
               <span className="text-[18px] text-accent">{showMore ? '−' : '+'}</span>
