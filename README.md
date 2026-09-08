@@ -33,8 +33,9 @@ npm test        # 52 unit tests: finance math, all three sample borrowers,
 npm run build   # type-check + production build to dist/
 ```
 
-On the intro screen, **"try a sample borrower"** loads Priya, Ravi or Anita from
-the brief and jumps straight to their report.
+On the landing screen, pick **Basic** (~10 core questions) or **Advanced** (adds
+the fine-tuning questions up front). Or click one of the sample borrowers -
+Priya, Ravi, Anita - to jump straight to a finished report.
 
 ---
 
