@@ -86,7 +86,12 @@ export function Field({ q, answers, onChange }: Props) {
       {q.movesOutput && q.tier === 'additional' && (
         <p className="mt-1 text-[12px] text-accent">Moves: {q.movesOutput}</p>
       )}
-      {q.skipNote && raw === undefined && <p className="mt-1 text-[12px] text-warn">{q.skipNote}</p>}
+      {q.skipNote && raw === undefined && (
+        <p className={`mt-1 text-[12px] ${q.tier === 'must' ? 'text-muted' : 'text-warn'}`}>
+          {q.tier === 'must' ? 'Optional - ' : ''}
+          {q.skipNote}
+        </p>
+      )}
     </div>
   );
 }

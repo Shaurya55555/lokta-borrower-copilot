@@ -120,7 +120,7 @@ export const QUESTIONS: Question[] = [
     help: 'Food, utilities, school fees, transport, rent is asked separately. A rough figure is fine.',
     type: 'money',
     movesOutput: 'O2 amount (borrower-can-carry), O4',
-    skipNote: 'Skipped → we use a subsistence floor for your dependents (conservative).',
+    skipNote: 'if left blank, we assume a conservative subsistence floor based on your dependents.',
   },
   {
     id: 'rentPaid',
