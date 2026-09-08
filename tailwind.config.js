@@ -14,6 +14,8 @@ export default {
         rule: '#E2D9DE',
         paper: '#FBF9FA',
         paper2: '#F3EEF1',
+        beige: '#F1E7D0',
+        'beige-dark': '#E7D8B4',
         accent: '#4B2440',
         'accent-soft': '#EFE3EA',
         warn: '#8A4B12',

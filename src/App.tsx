@@ -130,7 +130,7 @@ export default function App() {
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => startAssessment('basic')}
-                      className="card p-3 text-center transition-colors hover:border-accent hover:bg-accent-soft"
+                      className="card border-beige-dark bg-beige p-3 text-center transition-colors hover:border-accent hover:bg-beige-dark"
                     >
                       <span className="block text-[15px] font-semibold text-ink">Basic →</span>
                       <span className="mt-0.5 block text-[12px] text-muted">
@@ -139,7 +139,7 @@ export default function App() {
                     </button>
                     <button
                       onClick={() => startAssessment('advanced')}
-                      className="card p-3 text-center transition-colors hover:border-accent hover:bg-accent-soft"
+                      className="card border-beige-dark bg-beige p-3 text-center transition-colors hover:border-accent hover:bg-beige-dark"
                     >
                       <span className="block text-[15px] font-semibold text-ink">Advanced →</span>
                       <span className="mt-0.5 block text-[12px] text-muted">
