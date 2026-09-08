@@ -2,15 +2,14 @@ import type { Answers } from '../rules/types';
 
 /**
  * The question set. Two tiers:
- *  - tier 'must' - the core set with no safe default, needed to produce all four
- *    outputs. Nine questions for almost everyone: a salaried borrower with a
- *    known score and an informal borrower both answer 9 (the informal borrower's
- *    weak-month income figure takes the slot the salaried borrower spends on the
- *    exact credit score).
+ *  - tier 'must' - the core set shown in the main flow, ~10 questions. Most have
+ *    no safe default; household spend is the exception - it is load-bearing
+ *    enough to ask up front, but carries a subsistence-floor default so a skip
+ *    still produces the report (it just widens the "safely carry" range).
  *  - tier 'additional' - each one must change an output. `movesOutput` says which.
- *    Anything with a conservative documented default (rent, household spend, the
- *    thin-file check) lives here, not in 'must' - a skipped answer substitutes the
- *    default and widens the band, it never blocks the report.
+ *    Anything else with a conservative documented default (rent, the thin-file
+ *    check) lives here - a skipped answer substitutes the default and widens the
+ *    band, it never blocks the report.
  *
  * `show(a)` is the adaptive gate: a salaried IT employee and a kirana owner do
  * not see the same list. A question that cannot change any output for THIS
@@ -116,7 +115,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: 'monthlyHouseholdExpenses',
-    tier: 'additional',
+    tier: 'must',
     label: 'Roughly what does your household spend each month to run?',
     help: 'Food, utilities, school fees, transport, rent is asked separately. A rough figure is fine.',
     type: 'money',

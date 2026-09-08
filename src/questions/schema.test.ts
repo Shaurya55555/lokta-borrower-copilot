@@ -50,20 +50,18 @@ describe('adaptive question visibility', () => {
     expect(business).toContain('collateralType');
   });
 
-  it('keeps the must-set tight: a salaried borrower with a known score answers 9, a thin-file borrower at most 11', () => {
+  it('keeps the must-set tight: a salaried borrower with a known score answers 10, a thin-file borrower at most 12', () => {
     const salariedKnownScore = visibleQuestions({ incomeType: 'salaried', creditScoreKnown: true, purpose: 'wedding' })
       .filter((q) => q.tier === 'must');
-    expect(salariedKnownScore).toHaveLength(9);
+    expect(salariedKnownScore).toHaveLength(10);
 
     const informalThinFile = visibleQuestions({ incomeType: 'informal', creditScoreKnown: false, purpose: 'business_expansion' })
       .filter((q) => q.tier === 'must');
-    expect(informalThinFile.length).toBeLessThanOrEqual(11);
+    expect(informalThinFile.length).toBeLessThanOrEqual(12);
   });
 
-  it('anything with a safe documented default is tier "additional", never "must"', () => {
-    const withDefault = QUESTIONS.filter((q) => q.skipNote);
-    for (const q of withDefault) {
-      expect(q.tier, `${q.id} has a skipNote default, so it must not be tier "must"`).toBe('additional');
-    }
+  it('the only must-tier question carrying a skip default is household spend; everything else with a default is additional', () => {
+    const mustWithDefault = QUESTIONS.filter((q) => q.skipNote && q.tier === 'must').map((q) => q.id);
+    expect(mustWithDefault).toEqual(['monthlyHouseholdExpenses']);
   });
 });

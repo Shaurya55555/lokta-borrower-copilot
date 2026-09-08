@@ -118,7 +118,7 @@ export default function App() {
                   or clear my answers and start fresh
                 </button>
               ) : (
-                <span className="text-[12px] text-muted">about 9 quick questions · around 2 minutes</span>
+                <span className="text-[12px] text-muted">about 10 quick questions · around 2 minutes</span>
               )}
             </div>
           </div>

@@ -7,7 +7,7 @@ next, and what I deliberately left out.
 
 ## What it does, in one pass
 
-A borrower opens the app, answers ~9 questions, and gets a report with four
+A borrower opens the app, answers ~10 questions, and gets a report with four
 outputs and a one-page Negotiation Card. No login, no bureau pull, nothing
 stored. Try `npm run dev` then **"try a sample borrower"** for Priya, Ravi or
 Anita.

@@ -27,7 +27,6 @@ const pct = (n: number) => n.toFixed(1) + '%';
 /** Additional questions that are relevant given the borrower's situation. */
 function relevantAdditional(a: Answers): (keyof Answers)[] {
   const base: (keyof Answers)[] = [
-    'monthlyHouseholdExpenses',
     'yearsInJobOrTrade',
     'emergencySavingsMonths',
     'pastBounces12m',
@@ -46,7 +45,6 @@ function relevantAdditional(a: Answers): (keyof Answers)[] {
 }
 
 const WHAT_ANSWER_DOES: Partial<Record<keyof Answers, string>> = {
-  monthlyHouseholdExpenses: 'replaces a conservative subsistence-floor estimate with your real spend - moves what you can safely carry',
   rentPaid: 'rent is subtracted from what you can safely carry - skipping it assumes you own your home',
   neverBorrowed: 'separates a genuine thin file (never borrowed) from just not knowing your score - only the first carries a real rate premium',
   emergencySavingsMonths: 'unlocks or protects the affordability buffer - can swing the amount by 10–20%',

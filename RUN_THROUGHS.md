@@ -24,12 +24,12 @@ EMIs to ₹100.
 **Must (answered, 9):** purpose = wedding · amount = ₹8,00,000 · earns = salaried ·
 take-home = ₹1,10,000 · existing EMIs = ₹14,000 · age = 29 · dependents = 0 ·
 knows score = yes · score = 780.
+**Must (skipped → default):** household expenses → subsistence floor.
 
 **Additional (answered):** rent = ₹28,000 · years in job = 5 · large employer = yes.
-**Additional (skipped → default):** household expenses → subsistence floor,
-variable-pay share, card balance/limit, past bounces, emergency-savings months,
-own an asset to pledge, co-applicant, upcoming large expense, existing lender
-relationship.
+**Additional (skipped → default):** variable-pay share, card balance/limit, past
+bounces, emergency-savings months, own an asset to pledge, co-applicant, upcoming
+large expense, existing lender relationship.
 
 **Adaptively hidden** (cannot move an output for a salaried consumption
 borrower): cash-income evidence, high-cost-debt balance, "will this loan earn
@@ -94,16 +94,15 @@ numbers as the why-sentence above, as rows instead of a sentence):
 **Must (answered, 9):** purpose = business expansion · amount = ₹15,00,000 · earns
 = self-employed · ITR income = ₹35,000/mo · weak month = ₹40,000 · existing EMIs
 = ₹0 · age = 42 · dependents = 0 (wife earns and co-applies) · knows score = no.
-**Must (skipped → default):** none.
+**Must (skipped → default):** household expenses → subsistence floor.
 
 **Additional (answered):** **ever borrowed = no** (thin file) · years in trade =
 14 · cash-income evidence = none ·
 good month = ₹80,000 · owns asset = commercial property · asset value =
 ₹45,00,000 · already mortgaged = no · co-applicant = yes · co-applicant income =
 ₹18,000 · co-applicant documented = no · loan will earn money = yes.
-**Additional (skipped → default):** household expenses → subsistence floor, rent
-→ ₹0, card balance/limit, past bounces, emergency-savings months, upcoming large
-expense, existing lender relationship.
+**Additional (skipped → default):** rent → ₹0, card balance/limit, past bounces,
+emergency-savings months, upcoming large expense, existing lender relationship.
 
 **Adaptively hidden** (do not apply to a self-employed borrower): large-employer,
 variable-pay share, high-cost-debt balance.
@@ -172,14 +171,14 @@ it is what `checkQuote()` actually returns for these inputs.)
 **Must (answered, 9):** purpose = vehicle · amount = ₹1,50,000 · earns = informal ·
 typical month = ₹26,000 · weak month = ₹26,000 · existing EMIs = ₹0 · age = 35 ·
 dependents = 3 (husband + two children) · knows score = no.
-**Must (skipped → default):** none.
+**Must (skipped → default):** household expenses → subsistence floor.
 
 **Additional (answered):** years in trade = 2 · good month = ₹30,000 · past
 bounces (12 mo) = 1 · bounce in last 3 months = yes · emergency-savings months =
 0 · high-cost-debt balance = ₹35,000 · loan will earn money = yes.
 **Additional (skipped → default):** ever borrowed → treated as score-unknown,
-household expenses → subsistence floor, rent → ₹0, card balance/limit,
-co-applicant, upcoming large expense, existing lender relationship.
+rent → ₹0, card balance/limit, co-applicant, upcoming large expense, existing
+lender relationship.
 
 **Adaptively hidden:** large-employer, variable-pay share, cash-income evidence.
 

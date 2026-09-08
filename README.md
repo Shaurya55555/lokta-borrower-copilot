@@ -109,7 +109,7 @@ never on its own a demotion. (`RULES.md` §6.2.)
 
 ### Confidence widens with silence
 
-Answer only the ~9 must-questions and every range is wide and labelled low
+Answer only the ~10 must-questions and every range is wide and labelled low
 confidence. Each additional question is gated on whether it can change an output;
 answering it narrows a specific number, and the report says which. A skipped
 question never narrows anything - the engine substitutes a conservative default
