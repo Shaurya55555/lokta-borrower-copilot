@@ -14,6 +14,17 @@
   h1, h2, h3 {
     @apply font-display;
   }
+  /* No spinner arrows on number inputs, and no accidental value change
+     from the mouse wheel while scrolling the page. */
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
 }
 
 @layer components {

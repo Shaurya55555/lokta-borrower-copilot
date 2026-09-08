@@ -66,6 +66,8 @@ export function Field({ q, answers, onChange }: Props) {
               min={q.min}
               max={q.max}
               placeholder={q.skipNote ? 'optional' : ''}
+              // stop the mouse wheel from changing the value while the page scrolls
+              onWheel={(e) => e.currentTarget.blur()}
               onChange={(e) => {
                 const val = e.target.value;
                 if (val === '') return onChange(q.id, undefined);

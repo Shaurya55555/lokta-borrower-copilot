@@ -54,6 +54,7 @@ export function QuoteChecker({ a }: { a: Assessment }) {
                 type="number"
                 className="mt-1 w-full rounded-md border border-rule bg-white px-3 py-2 text-[15px] tabular-nums"
                 value={amount}
+                onWheel={(e) => e.currentTarget.blur()}
                 onChange={(e) => setAmount(Number(e.target.value) || 0)}
               />
             </label>
@@ -65,6 +66,7 @@ export function QuoteChecker({ a }: { a: Assessment }) {
                 className="mt-1 w-full rounded-md border border-rule bg-white px-3 py-2 text-[15px] tabular-nums"
                 value={ratePct}
                 placeholder="e.g. 14"
+                onWheel={(e) => e.currentTarget.blur()}
                 onChange={(e) => setRatePct(e.target.value === '' ? '' : Number(e.target.value))}
               />
             </label>
@@ -74,6 +76,7 @@ export function QuoteChecker({ a }: { a: Assessment }) {
                 type="number"
                 className="mt-1 w-full rounded-md border border-rule bg-white px-3 py-2 text-[15px] tabular-nums"
                 value={tenureMonths}
+                onWheel={(e) => e.currentTarget.blur()}
                 onChange={(e) => setTenureMonths(Number(e.target.value) || 0)}
               />
             </label>
@@ -84,6 +87,7 @@ export function QuoteChecker({ a }: { a: Assessment }) {
                 className="mt-1 w-full rounded-md border border-rule bg-white px-3 py-2 text-[15px] tabular-nums"
                 value={feeRupees}
                 placeholder="0"
+                onWheel={(e) => e.currentTarget.blur()}
                 onChange={(e) => setFeeRupees(e.target.value === '' ? '' : Number(e.target.value))}
               />
             </label>
@@ -94,6 +98,7 @@ export function QuoteChecker({ a }: { a: Assessment }) {
                 className="mt-1 w-full rounded-md border border-rule bg-white px-3 py-2 text-[15px] tabular-nums"
                 value={otherChargesRupees}
                 placeholder="0"
+                onWheel={(e) => e.currentTarget.blur()}
                 onChange={(e) => setOtherChargesRupees(e.target.value === '' ? '' : Number(e.target.value))}
               />
             </label>
