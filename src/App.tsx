@@ -72,15 +72,15 @@ export default function App() {
             </p>
           </div>
           <button className="btn-primary w-full" onClick={() => setStage('questions')}>
-            Start assessment - about 10 questions
+            Start assessment - about 9 questions
           </button>
           <div>
             <p className="text-[13px] font-semibold text-muted">…or try a sample borrower</p>
-            <div className="mt-2 space-y-2">
+            <div className="mt-2 flex flex-col gap-2">
               {PERSONAS.map((p) => (
                 <button
                   key={p.id}
-                  className="card w-full p-3 text-left hover:bg-paper2"
+                  className="card block w-full p-3 text-left hover:bg-paper2"
                   onClick={() => loadPersona(p.id)}
                 >
                   <p className="text-[14px] font-semibold text-ink">{p.name}</p>

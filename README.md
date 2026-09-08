@@ -1,12 +1,14 @@
 # Borrower Copilot
 
+**Live:** https://lokta-borrower-copilot.vercel.app
+
 A self-assessment tool that makes an Indian borrower the best-informed person in
 the room before they walk into a lender. It answers four questions from what the
 borrower tells it, with no login, no bureau pull, and nothing stored:
 
 1. **Should I borrow at all?** (borrow / borrow less / don't borrow)
-2. **How much am I really eligible for?** (what a lender will sanction vs. what I can safely carry)
-3. **What is a fair rate for me?** (a band, plus the all-in APR with fees)
+2. **How much am I really eligible for?** (what a lender is likely to sanction vs. what I can safely carry)
+3. **What is a fair rate for me?** (a band, on bank-tier or NBFC-tier pricing, plus the all-in APR with fees)
 4. **What EMI should I agree to?** (a monthly ceiling, the tenure trade-off, and two stress cases)
 
 ...then it prints a one-page **Negotiation Card** the borrower can hold up to a lender.
@@ -26,7 +28,8 @@ Open the printed URL (default http://localhost:5173). No backend, no environment
 variables, no database. Everything runs in the browser.
 
 ```bash
-npm test        # 20 unit tests: the finance math + all three sample borrowers
+npm test        # 52 unit tests: finance math, all three sample borrowers,
+                # adaptive question gates, lender-tier routing, stress cases
 npm run build   # type-check + production build to dist/
 ```
 
@@ -60,14 +63,15 @@ src/
     obligations.ts       ← existing monthly commitments (FOIR numerator)
     routing.ts           ← which product this should even be (home / LAP / personal / gold / vehicle / EV)
     ceilings.ts          ← lender ceiling (FOIR) and borrower ceiling (affordability)
-    rate.ts              ← where in the rate band the borrower lands, and the all-in APR of it
+    rate.ts              ← lender tier (bank vs NBFC band), position within it, all-in APR
     stress.ts            ← income −20% and rate +2pts
     verdict.ts           ← borrow / borrow less / don't borrow, with the one-sentence why
     quoteCheck.ts         ← on-demand: score an actual lender quote against the fair band
     engine.ts            ← assess(answers) → Assessment. Orchestrates the above. Builds the Card.
-    engine.test.ts       ← the finance math + Priya / Ravi / Anita, asserted
+    engine.test.ts       ← finance math, Priya / Ravi / Anita, tier routing, stress, quote checker
   questions/
-    schema.ts            ← the question bank: 2 tiers, adaptive show() gates, "what this moves"
+    schema.ts            ← the question bank: 2 tiers (9 must + adaptive), show() gates, "what this moves"
+    schema.test.ts       ← the adaptive show() gates and must-set size, asserted
   personas/
     index.ts             ← the three brief borrowers as answer sets (also used by the tests)
   components/             ← the UI. Reads Assessment, renders it. Holds no lending logic.
@@ -122,7 +126,7 @@ smaller, handling - tiny on a secured loan, real on an unsecured one.
 
 ## What this does not do
 
-See `RULES.md` §12. In short: no bureau data, no live rate feed, no
-lender-specific policy, no verification of anything typed in. Rate bands are
-2026-indicative judgement calls; a real offer can sit outside them. Not financial
-advice.
+See `RULES.md` §13. In short: no bureau data, no live rate feed, no
+lender-specific policy, no verification of anything typed in. The bank and NBFC
+rate bands are 2026-indicative judgement calls; a real offer can sit outside
+them. Not financial advice.

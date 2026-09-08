@@ -157,9 +157,9 @@ eligibility than they actually have.
 
 ## Validation and iteration
 
-45 automated tests cover the finance math, adaptive question visibility,
-affordability ceilings, stress cases, all three personas, and quote analysis -
-not just arithmetic checks.
+52 automated tests cover the finance math, adaptive question visibility,
+affordability ceilings, lender-tier (bank vs NBFC) routing, stress cases, all
+three personas, and quote analysis - not just arithmetic checks.
 
 Three review passes were used deliberately to challenge the build before
 submitting it: domain-logic correctness, source attribution and numeric
