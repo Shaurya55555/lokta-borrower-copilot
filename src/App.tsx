@@ -48,6 +48,7 @@ export default function App() {
   // Everything below is derived from `answers` on each render. assess() is pure
   // arithmetic over a dozen small functions - cheap enough to run every render,
   // and keeping it un-memoised sidesteps stale-dependency bugs entirely.
+  const hasAnswers = Object.keys(answers).length > 0;
   const visible = visibleQuestions(answers);
   const mustQs = visible.filter((q) => q.tier === 'must');
   const additionalQs = visible.filter((q) => q.tier === 'additional');
@@ -64,12 +65,30 @@ export default function App() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:py-12">
       <header className="no-print border-b border-rule pb-4">
-        <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
-          Borrower Copilot
-        </p>
-        <h1 className="mt-1 font-display text-[26px] leading-tight text-ink sm:text-[32px]">
-          Know your numbers <em className="text-accent">before</em> you walk into a lender.
-        </h1>
+        <div className="flex items-start justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => setStage('intro')}
+            className="group text-left"
+            title="Back to start"
+          >
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-muted group-hover:text-accent">
+              Borrower Copilot
+            </span>
+            <span className="mt-1 block font-display text-[26px] leading-tight text-ink sm:text-[32px]">
+              Know your numbers <em className="text-accent">before</em> you walk into a lender.
+            </span>
+          </button>
+          {stage !== 'intro' && (
+            <button
+              type="button"
+              onClick={() => setStage('intro')}
+              className="mt-0.5 shrink-0 rounded-full border border-rule px-3 py-1 text-[12px] font-semibold text-muted hover:border-accent hover:text-accent"
+            >
+              Home
+            </button>
+          )}
+        </div>
         <p className="mt-2 text-[14px] text-muted">
           Four answers: whether to borrow, how much, at what rate, and the EMI to hold the line on.
           No login, no credit check, nothing stored - everything runs from what you tell it.
@@ -101,21 +120,29 @@ export default function App() {
             </p>
           </div>
           <button className="btn-primary w-full" onClick={() => setStage('questions')}>
-            Start - answer about 9 quick questions
+            {hasAnswers ? 'Resume where you left off' : 'Start - answer about 9 quick questions'}
           </button>
+          {hasAnswers && (
+            <button
+              className="-mt-2 block text-[12px] font-semibold text-muted hover:text-accent"
+              onClick={() => setAnswers({})}
+            >
+              Clear my answers and start fresh
+            </button>
+          )}
           <div>
             <p className="text-[13px] font-semibold text-muted">
               …or load a sample borrower to see a finished report
             </p>
-            <div className="mt-2 flex flex-col gap-2">
+            <div className="mt-2 grid gap-2 sm:grid-cols-3">
               {PERSONAS.map((p) => (
                 <button
                   key={p.id}
-                  className="card block w-full p-3 text-left hover:bg-paper2"
+                  className="card block h-full w-full p-3 text-left hover:bg-paper2"
                   onClick={() => loadPersona(p.id)}
                 >
-                  <p className="text-[14px] font-semibold text-ink">{p.name}</p>
-                  <p className="mt-0.5 text-[12px] text-muted">{p.blurb}</p>
+                  <p className="text-[13px] font-semibold text-ink">{p.name}</p>
+                  <p className="mt-1 text-[12px] leading-snug text-muted">{p.blurb}</p>
                 </button>
               ))}
             </div>
