@@ -112,31 +112,45 @@ export default function App() {
             <p className="mx-auto mt-4 max-w-md text-[15px] text-muted">
               Four answers from what you tell it. No login, no credit check, nothing stored.
             </p>
-            <div className="mt-7 flex flex-col items-center gap-2">
-              <button
-                className="btn-primary px-6"
-                onClick={() => (hasAnswers ? setStage('questions') : startAssessment('basic'))}
-              >
-                {hasAnswers ? 'Resume where you left off →' : 'Start - Basic →'}
-              </button>
+            <div className="mx-auto mt-7 max-w-md">
               {hasAnswers ? (
-                <button
-                  className="text-[12px] font-semibold text-muted hover:text-accent"
-                  onClick={() => setAnswers({})}
-                >
-                  or clear my answers and start fresh
-                </button>
-              ) : (
-                <>
+                <div className="flex flex-col items-center gap-2">
+                  <button className="btn-primary px-6" onClick={() => setStage('questions')}>
+                    Resume where you left off →
+                  </button>
                   <button
                     className="text-[12px] font-semibold text-muted hover:text-accent"
-                    onClick={() => startAssessment('advanced')}
+                    onClick={() => setAnswers({})}
                   >
-                    or start in Advanced mode - answer the fine-tuning questions now
+                    or clear my answers and start fresh
                   </button>
-                  <span className="mt-1 text-[12px] text-muted">
-                    Basic: ~10 questions, ~2 minutes. Advanced: ~10 more for tighter ranges.
-                  </span>
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => startAssessment('basic')}
+                      className="card p-3 text-center transition-colors hover:border-accent hover:bg-accent-soft"
+                    >
+                      <span className="block text-[15px] font-semibold text-ink">Basic →</span>
+                      <span className="mt-0.5 block text-[12px] text-muted">
+                        ~10 questions · about 2 min
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => startAssessment('advanced')}
+                      className="card p-3 text-center transition-colors hover:border-accent hover:bg-accent-soft"
+                    >
+                      <span className="block text-[15px] font-semibold text-ink">Advanced →</span>
+                      <span className="mt-0.5 block text-[12px] text-muted">
+                        ~20 questions · tighter ranges
+                      </span>
+                    </button>
+                  </div>
+                  <p className="mt-2 text-center text-[12px] text-muted">
+                    Advanced asks the fine-tuning questions up front. You can also add them after a
+                    Basic report.
+                  </p>
                 </>
               )}
             </div>
