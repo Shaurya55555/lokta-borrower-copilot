@@ -21,7 +21,7 @@ function Block({
   children: ReactNode;
 }) {
   return (
-    <section id={id} className="card scroll-mt-16 p-4 sm:p-5">
+    <section id={id} className="card scroll-mt-28 p-4 sm:p-5">
       <div className="flex items-baseline gap-2">
         <span className="font-mono text-[12px] font-semibold text-accent">{tag}</span>
         <h3 className="text-[17px] font-semibold text-ink">{title}</h3>
@@ -38,7 +38,7 @@ export function Outputs({ a }: { a: Assessment }) {
   return (
     <div className="space-y-3">
       {/* O1 */}
-      <section id="o1" className={`card scroll-mt-16 border-2 ${v.ring} p-4 sm:p-5`}>
+      <section id="o1" className={`card scroll-mt-28 border-2 ${v.ring} p-4 sm:p-5`}>
         <div className="flex items-center gap-2">
           <span className="font-mono text-[12px] font-semibold text-accent">O1</span>
           <span className={`chip ${v.chip}`}>{v.word}</span>

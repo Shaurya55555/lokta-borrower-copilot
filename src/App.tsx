@@ -7,8 +7,15 @@ import { Field } from './components/Field';
 import { Outputs } from './components/Outputs';
 import { NegotiationCard } from './components/NegotiationCard';
 import { QuoteChecker } from './components/QuoteChecker';
+import { inr, inrShort, pct } from './components/format';
 
 type Stage = 'intro' | 'questions' | 'results';
+
+const VERDICT_MINI: Record<string, { word: string; chip: string }> = {
+  borrow: { word: 'Borrow', chip: 'border-good/30 bg-good/10 text-good' },
+  borrow_less: { word: 'Borrow less', chip: 'border-warn/30 bg-warn/10 text-warn' },
+  do_not_borrow: { word: "Don't borrow", chip: 'border-bad/30 bg-bad/10 text-bad' },
+};
 
 function withLabels(q: Question, a: Answers): Question {
   if (q.id === 'netMonthlyIncome') return { ...q, label: incomeFieldLabel(a) };
@@ -339,6 +346,43 @@ export default function App() {
                 </button>
               </div>
             </div>
+
+            {/* Live summary - the four headline numbers, always visible while
+                scrolling; they re-render on every answer. */}
+            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-rule pt-2 text-[12px]">
+              <span
+                className={`inline-flex items-center rounded-full border px-2 py-0.5 font-semibold ${
+                  VERDICT_MINI[result.verdict.call].chip
+                }`}
+              >
+                {VERDICT_MINI[result.verdict.call].word}
+              </span>
+              <span>
+                <b className="tabular-nums text-ink">
+                  {result.verdict.call === 'do_not_borrow'
+                    ? '₹0'
+                    : inrShort(result.maxAmount.amount.point)}
+                </b>{' '}
+                <span className="text-muted">borrow</span>
+              </span>
+              <span>
+                <b className="tabular-nums text-ink">
+                  {result.verdict.call === 'do_not_borrow'
+                    ? '—'
+                    : `${pct(result.rate.aprBand.low)}–${pct(result.rate.aprBand.high)}`}
+                </b>{' '}
+                <span className="text-muted">all-in APR</span>
+              </span>
+              <span>
+                <b className="tabular-nums text-ink">
+                  {result.outflow.emiCeiling.point > 0
+                    ? inr(result.outflow.emiCeiling.point)
+                    : '—'}
+                </b>{' '}
+                <span className="text-muted">EMI ceiling</span>
+              </span>
+              <span className="text-muted">confidence {result.confidence}</span>
+            </div>
           </div>
 
           {/* After the Basic report: prompt the Advanced (fine-tuning) questions. */}
@@ -362,14 +406,14 @@ export default function App() {
 
           <Outputs a={result} />
 
-          <div id="card" className="scroll-mt-16">
+          <div id="card" className="scroll-mt-28">
             <NegotiationCard a={result} />
           </div>
-          <div id="quote" className="scroll-mt-16">
+          <div id="quote" className="scroll-mt-28">
             <QuoteChecker a={result} />
           </div>
 
-          <section id="tighten" className="card no-print scroll-mt-16 border-accent/30 p-4 sm:p-5">
+          <section id="tighten" className="card no-print scroll-mt-28 border-accent/30 p-4 sm:p-5">
             <button
               className="flex w-full items-center justify-between text-left"
               onClick={() => setShowMore((s) => !s)}
