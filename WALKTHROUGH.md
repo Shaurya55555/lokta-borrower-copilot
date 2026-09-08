@@ -73,7 +73,7 @@ ever a 300.
 |---|---|---|
 | O1 verdict | `verdict.ts` | "Don't" fires on: nothing left to service an EMI · fresh bounce + high existing FOIR · >1 month's income in 28%+ debt while borrowing unsecured · stress pushes FOIR past 70% · thin buffer + over-leveraged. Always returns a constructive path, never a dead end. |
 | O2 amount | `ceilings.ts` | lender FOIR ceiling vs borrower affordability; report the pair, recommend `min(...)`. |
-| O3 rate | `rate.ts` | band *position* (0–1) from score / employer / secured / income type, then the nominal band, then all-in APR as the IRR of the real cashflows (principal − fees, then EMIs). |
+| O3 rate | `rate.ts` | first route to a **lender tier** - bank-tier band or NBFC/fintech band, because Indian pricing bifurcates hard between the two (a thin-file informal borrower does not get bank rates); then band *position* (0–1) within that tier from score / employer / secured / income type; then all-in APR as the IRR of the real cashflows (principal − fees, then EMIs). |
 | O4 outflow | `engine.ts` + `stress.ts` | EMI ceiling = `min(lender, borrower)`; prudent vs maximum tenure with total interest for each; income −20% and rate +2 pts. |
 
 The **Negotiation Card** is assembled in `engine.ts` from the same numbers -
@@ -119,12 +119,14 @@ eligibility than they actually have.
    feed each output. Show it: "your ₹22,000 ceiling would be ₹28,000 if you had
    3 months of savings" - turn the internal `missingAnswers` metadata into a
    visible what-if next to each figure.
-2. **Real product-rate calibration.** The bands in `config.ts` are 2026
-   judgement calls. Replace them with a small, dated table sourced from published
-   lender rate cards, with a "last verified" stamp shown in the UI.
-3. **A proper FOIR grid per lender archetype** (PSU bank / private bank / NBFC /
-   fintech) instead of one market-average curve, since the same borrower gets
-   materially different answers from each.
+2. **Real product-rate calibration.** The bank / NBFC bands in `config.ts` are
+   2026 judgement calls. Replace them with a small, dated table sourced from
+   published lender rate cards, with a "last verified" stamp shown in the UI.
+3. **Extend the tier split into a full FOIR grid per lender archetype** (PSU bank
+   / private bank / NBFC / fintech). O3 already routes bank vs NBFC for pricing;
+   the affordability ceilings (`ceilings.ts`) still use one market-average FOIR
+   curve, and the same borrower gets materially different answers from each
+   archetype.
 4. **Save/share the report** as a signed URL or a PDF, so the borrower can
    actually carry the Card into a branch without the tab open. (Kept out for now
    - "nothing stored" was a deliberate constraint.)

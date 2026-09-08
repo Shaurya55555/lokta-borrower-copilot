@@ -258,8 +258,10 @@ describe('cross-cutting rules', () => {
     expect(width(noScore)).toBeGreaterThan(width(withScore));
     // not penalised like a genuinely bad score...
     expect(noScore.rate.nominalBand.point).toBeLessThan(badScore.rate.nominalBand.point - 1);
-    // ...and centre stays at/below the band midpoint, never above it
-    expect(noScore.rate.nominalBand.point).toBeLessThanOrEqual((10.5 + 24) / 2 + 0.01);
+    // ...and centre stays at/below the bank-tier band midpoint, never above it
+    // (an unknown score does not demote a prime salaried borrower off bank tier)
+    expect(noScore.rate.lenderTier).toBe('bank');
+    expect(noScore.rate.nominalBand.point).toBeLessThanOrEqual((10.5 + 16) / 2 + 0.01);
   });
   it('fewer answers → wider amount band (confidence widens with silence)', () => {
     const full = assess(byId('priya'));
@@ -282,5 +284,39 @@ describe('cross-cutting rules', () => {
     expect(r.verdict.why.length).toBeGreaterThan(20);
     expect(r.maxAmount.why.length).toBeGreaterThan(20);
     expect(r.outflow.why.length).toBeGreaterThan(20);
+  });
+});
+
+describe('lender-tier routing (bank band vs NBFC band)', () => {
+  it('a prime salaried borrower is priced on the bank band', () => {
+    const r = assess(byId('priya'));
+    expect(r.rate.lenderTier).toBe('bank');
+  });
+
+  it('an informal borrower on a small-ticket secured loan is priced on the NBFC band', () => {
+    // Anita: informal income, no credit history, EV two-wheeler. A bank branch
+    // does not finance this; an NBFC / captive financier does, at a premium.
+    const r = assess(byId('anita'));
+    expect(r.rate.lenderTier).toBe('nbfc');
+    expect(r.rate.nominalBand.low).toBeGreaterThan(11);
+  });
+
+  it('property-backed lending stays bank-tier even on a thin file', () => {
+    // Ravi: no credit score, self-employed, but a ₹45L unencumbered shop → LAP.
+    const r = assess(byId('ravi'));
+    expect(r.rate.product).toBe('lap');
+    expect(r.rate.lenderTier).toBe('bank');
+  });
+
+  it('an unknown score alone never demotes a bankable borrower to the NBFC band', () => {
+    const known = assess({ ...byId('priya') });
+    const unknown = assess({ ...byId('priya'), creditScoreKnown: false, creditScore: undefined });
+    expect(known.rate.lenderTier).toBe('bank');
+    expect(unknown.rate.lenderTier).toBe('bank');
+  });
+
+  it('a known sub-cutoff score does demote an unsecured borrower to the NBFC band', () => {
+    const weak = assess({ ...byId('priya'), creditScoreKnown: true, creditScore: 640 });
+    expect(weak.rate.lenderTier).toBe('nbfc');
   });
 });

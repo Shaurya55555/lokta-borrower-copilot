@@ -136,7 +136,11 @@ export function Outputs({ a }: { a: Assessment }) {
       <Block tag="O3" title="An indicative fair-rate range for you">
         <p className="mb-2 text-[12px] text-muted">
           An estimate from your profile against modelled market bands - not a lender quote, and
-          not a guarantee any lender will offer it.
+          not a guarantee any lender will offer it. Priced against{' '}
+          <b className="text-ink">
+            {a.rate.lenderTier === 'bank' ? 'bank-tier' : 'NBFC / fintech-tier'}
+          </b>{' '}
+          rates for this profile (see below).
         </p>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>

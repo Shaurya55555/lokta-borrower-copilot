@@ -93,6 +93,16 @@ nothing. So the app computes **two** ceilings from the same answers:
 The report shows both, side by side, and tells the borrower to use the lower one,
 in one sentence naming why it binds.
 
+### Bank rates and NBFC rates are different bands
+
+Every product carries two rate bands - a bank-tier band and an NBFC/fintech-tier
+band that starts where the bank band ends - because Indian retail pricing
+bifurcates hard between the two. `rate.ts` routes the borrower to one: a
+property-backed loan or a documented, bankable profile gets bank-tier pricing;
+informal income, a genuine thin file, or a known sub-700 score on anything else
+gets NBFC-tier, with a note saying what would move them up. An unknown score is
+never on its own a demotion. (`RULES.md` §6.2.)
+
 ### Confidence widens with silence
 
 Answer only the ~9 must-questions and every range is wide and labelled low

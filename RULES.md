@@ -96,9 +96,10 @@ income. A lender sanctions up to a FOIR ceiling that rises with income.
 (floored at 0).
 
 **Lender max principal** = present value of that EMI stream at the **expected
-(mid-band) rate** for the routed product, over the **maximum tenure the product
-allows** (§9). This is deliberately the optimistic end - it is what a lender
-*could* stretch to, not what the borrower *should* take.
+rate** for the routed product - the midpoint of whichever tier band applies to
+this borrower (§6.2) - over the **maximum tenure the product allows** (§9). This
+is deliberately the optimistic end - it is what a lender *could* stretch to, not
+what the borrower *should* take.
 
 ---
 
@@ -151,23 +152,32 @@ Route on **purpose + assets + amount**, before any pricing.
 ## 6. Interest-rate bands (nominal, per annum)
 
 Indicative Indian retail market, 2026. **My judgement**, informed by public
-lender rate cards (SBI / HDFC / Bajaj / Muthoot ranges). The app labels these
-"indicative - verify against live offers."
+lender rate cards (SBI / HDFC / Bajaj / Muthoot / Lendingkart ranges). The app
+labels these "indicative - verify against live offers."
 
-| Product | Rate band | Processing fee | Prudent / max tenure |
-|---|---|---|---|
-| Home loan | **8.40% – 9.75%** (floating, repo-linked) | 0.25%–0.50%, cap ~₹25,000 | 15 yr / 30 yr (to age 65–70) |
-| LAP | **9.50% – 12.00%** | 0.50%–1.50% | 10 yr / 15 yr |
-| Personal loan | **10.50% – 24.00%** | 1.00%–3.00% | 3 yr / 6 yr |
-| Business loan (unsecured) | **15.00% – 26.00%** | 2.00%–3.00% | 3 yr / 5 yr |
-| Gold loan | **9.00% – 18.00%** | 0.25%–1.50% | 1 yr / 3 yr |
-| Two-wheeler loan | **9.50% – 22.00%** | 1.00%–3.00% + ~₹3,000 | 3 yr / 5 yr |
-| EV two-wheeler (scheme) | **7.00% – 12.00%** | 1.00%–2.00% | 3 yr / 5 yr |
+Each product is priced on **two bands**, because Indian retail pricing
+bifurcates hard by lender archetype: a scheduled bank (PSU / large private) and
+an NBFC / fintech quote the same borrower materially different rates for the
+same product. The **NBFC band begins where the bank band ends.** Which band
+applies is a routing decision (§6.2), not a slider.
+
+| Product | Bank-tier band | NBFC / fintech-tier band | Processing fee | Prudent / max tenure |
+|---|---|---|---|---|
+| Home loan | **8.40% – 10.00%** | **10.00% – 13.00%** | 0.25%–0.50%, cap ~₹25,000 | 15 yr / 30 yr (to age 65–70) |
+| LAP | **9.50% – 12.50%** | **12.50% – 19.00%** | 0.50%–1.50% | 10 yr / 15 yr |
+| Personal loan | **10.50% – 16.00%** | **16.00% – 28.00%** | 1.00%–3.00% | 3 yr / 6 yr |
+| Business loan (unsecured) | **14.00% – 19.00%** | **19.00% – 30.00%** | 2.00%–3.00% | 3 yr / 5 yr |
+| Gold loan | **8.50% – 14.00%** | **14.00% – 26.00%** | 0.25%–1.50% | 1 yr / 3 yr |
+| Two-wheeler loan | **9.50% – 14.00%** | **14.00% – 24.00%** | 1.00%–3.00% + ~₹3,000 | 3 yr / 5 yr |
+| EV two-wheeler (scheme) | **7.00% – 11.00%** | **11.00% – 18.00%** | 1.00%–2.00% | 3 yr / 5 yr |
+
+`config.ts` also carries a `rate` envelope per product (bank floor → NBFC
+ceiling); it is display-only and used to clamp the Quote Checker.
 
 ### 6.1 Where in the band a borrower lands
 
-Start at the **band midpoint**, then apply additive adjustments (percentage
-points), clamped to the band:
+First pick the tier band (§6.2). Within it, start at the **band midpoint**, then
+apply additive adjustments (percentage points), clamped to that band:
 
 | Factor | Adjustment | Why | Source |
 |---|---|---|---|
@@ -188,6 +198,25 @@ Output O3 is a **band**: `[adjusted − residualUncertainty, adjusted +
 residualUncertainty]` where `residualUncertainty` shrinks from **±3.0** (only
 must-questions answered) to **±0.75** (all relevant additional questions
 answered).
+
+### 6.2 Which tier prices this borrower
+
+The bank and NBFC bands differ enough (§6) that picking the wrong one is a
+domain error, not a rounding one. `rate.ts` `lenderTier()` decides:
+
+| Situation | Tier | Why | Source |
+|---|---|---|---|
+| Property-backed loan (home, LAP), score unknown or ≥ 650 | **Bank** | Banks dominate property-backed lending and will underwrite a thin or weak file when the asset carries it | My judgement |
+| Property-backed loan, **known** score < 650 | NBFC | Below what most banks accept even against property | My judgement |
+| Any other loan: salaried / documented self-employed, score unknown or ≥ 700, has borrowed before | **Bank** | A profile a scheduled bank underwrites | My judgement |
+| Any other loan: **informal income**, OR genuine **thin file** (never borrowed), OR **known** score < 700 | NBFC | A bank branch declines; an NBFC / captive financier lends, at a premium | My judgement |
+| Score **unknown** on its own | **No demotion** | Unknown widens the band (§6.1), it never moves the borrower to a worse tier - brief rule 3 | Brief |
+
+When the answer is NBFC, the "why" line names what would move the borrower up:
+12 months of ITR or salary slips, a co-applicant with formal income, or
+property to pledge (a LAP). Worked examples: Priya → bank (prime salaried);
+Ravi → bank (property-backed LAP, thin file carried by the ₹45L shop);
+Anita → NBFC (informal income, no history, small-ticket EV loan).
 
 ---
 
@@ -378,3 +407,4 @@ everywhere else in the app - never a second pricing model.
 | 2026-09-04 | Initial ruleset | Build challenge v1.0 |
 | 2026-09-04 | Added §12a (productive-loan check) and §12b (Quote Checker); wired the previously-unused `expectedMonthlyReturnFromLoan` field into a real, isolated check; removed the unused `offersReceived` field in favour of the Quote Checker | An external review of the build correctly flagged two questionnaire fields that were captured but never read by the engine - a real gap, not a style note |
 | 2026-09-08 | Tightened the must-set to 9 questions: moved rent, household spend and the thin-file check to the additional tier (each already has a conservative default in §11, so a skip widens the band, never blocks the report). Softened "what a lender will sanction" to "our estimate of what a lender is likely to sanction" in the verdict text, matching §3 and the O2 label | Keeps the must-set genuinely tight (brief rule on question design) and removes the one place the copy sounded more certain than the model is |
+| 2026-09-08 | Split every product's rate band into a **bank tier** and an **NBFC / fintech tier** (§6), added §6.2 tier-routing in `rate.ts` (`lenderTier()`), surfaced the tier and its reason in O3, added 5 tests | Real Indian retail pricing bifurcates hard by lender archetype; pricing a thin-file informal borrower on bank rates was the one place the rate model was optimistic. Unknown score still never demotes a tier (rule 3). Personas: Priya/Ravi bank, Anita NBFC |

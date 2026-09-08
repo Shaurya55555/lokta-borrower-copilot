@@ -89,8 +89,11 @@ export interface Obligations {
   highCostDebt: number;
 }
 
+export type LenderTier = 'bank' | 'nbfc';
+
 export interface RateResult {
   product: ProductId;
+  lenderTier: LenderTier;  // which archetype's band priced this (§6.2)
   nominalBand: Range;      // percent p.a.
   aprBand: Range;          // percent p.a. all-in
   notes: string[];

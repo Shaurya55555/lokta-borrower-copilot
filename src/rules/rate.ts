@@ -1,6 +1,53 @@
 import { apr, clamp, emi } from './finance';
-import { GST_ON_FEES, PRODUCTS, RATE_ADJ, type ProductId } from './config';
-import type { Answers, Confidence, RateResult, Range } from './types';
+import { GST_ON_FEES, LENDER_TIER, PRODUCTS, RATE_ADJ, type ProductId } from './config';
+import type { Answers, Confidence, LenderTier, RateResult, Range } from './types';
+
+/**
+ * §6.2 - which lender archetype will realistically price this borrower, and so
+ * which of the product's two bands applies. An unknown credit score is NOT a
+ * demotion here (it widens the band elsewhere); only a KNOWN weak score, a
+ * genuine thin file, or informal income moves a borrower to the NBFC band.
+ *
+ * Property-backed lending (home, LAP) is the one place banks will still
+ * underwrite a weak or thin file - the asset carries it - so it stays
+ * bank-tier unless the score is known and genuinely low. Small-ticket secured
+ * lending (gold, two-wheeler) does NOT get an informal or thin-file borrower
+ * into a bank branch in practice - NBFCs and captive financiers own that
+ * segment - so it uses the same bankability test as unsecured.
+ */
+function lenderTier(a: Answers, product: ProductId, notes: string[]): LenderTier {
+  const score = a.creditScoreKnown ? a.creditScore : undefined;
+  const thinFile = a.neverBorrowed === true;
+  const informal = a.incomeType === 'informal';
+  const propertyBacked = product === 'home' || product === 'lap';
+
+  if (propertyBacked) {
+    if (score !== undefined && score < LENDER_TIER.securedFloorScore) {
+      notes.push(
+        `Priced at NBFC / fintech rates: a known score of ${score} is below what most banks accept even against property. Improving the score to ${LENDER_TIER.securedFloorScore}+ opens bank-tier pricing.`,
+      );
+      return 'nbfc';
+    }
+    notes.push('Priced at bank-tier rates: banks dominate property-backed lending and will lend against a sound asset even on a thin file.');
+    return 'bank';
+  }
+
+  const reasons: string[] = [];
+  if (thinFile) reasons.push('there is no credit history to underwrite');
+  if (informal) reasons.push('the income is informal / undocumented');
+  if (score !== undefined && score < LENDER_TIER.bankMinScore) reasons.push(`the credit score (${score}) is below the bank cut-off`);
+
+  if (reasons.length > 0) {
+    notes.push(
+      `Priced at NBFC / fintech rates: a scheduled bank is unlikely to sanction this loan because ${reasons.join(
+        ' and ',
+      )}. An NBFC or captive financier will, at a premium. Twelve months of ITR or salary slips, a co-applicant with formal income, or property to pledge (a LAP) moves you to bank-tier pricing.`,
+    );
+    return 'nbfc';
+  }
+  notes.push('Priced at bank-tier rates: the profile is one a scheduled bank would underwrite.');
+  return 'bank';
+}
 
 /** How many of the rate-relevant additional questions were answered (0..1). */
 function rateAnswerCompleteness(a: Answers): number {
@@ -92,9 +139,11 @@ export function assessRate(
   confidence: Confidence,
 ): RateResult {
   const p = PRODUCTS[productId];
-  const [bandLo, bandHi] = p.rate;
-  const span = bandHi - bandLo;
   const notes: string[] = [];
+
+  const tier = lenderTier(a, productId, notes);
+  const [bandLo, bandHi] = p.rateByTier[tier];
+  const span = bandHi - bandLo;
 
   const t = pricePosition(a, p.secured, notes);
   const centre = bandLo + t * span;
@@ -136,5 +185,5 @@ export function assessRate(
       `. A quote whose APR is more than ~1.5 pts above the top of this band is a markup worth challenging.`,
   );
 
-  return { product: productId, nominalBand, aprBand, notes };
+  return { product: productId, lenderTier: tier, nominalBand, aprBand, notes };
 }

@@ -41,7 +41,7 @@ money".
 |---|---|---|
 | **O1** | **Borrow less.** | Borrow about **₹6,61,000**, not ₹8,00,000. *Your ask is above what you can safely carry. After ₹63,000 of unavoidable monthly outgo (car EMI ₹14,000 + rent ₹28,000 + essentials ₹10,000 + protected savings ₹11,000), ₹1,10,000 leaves ₹22,000 for a new EMI, and a wedding is additionally capped at 20% of take-home. Over a sensible 3-year term that is ~₹6,61,000.* |
 | **O2** | A lender is likely to sanction **~₹23,7 L** (band ₹20.2–27.3 L) · You can safely carry **~₹6,6 L** (band ₹5.6–7.6 L). | **Use the "safely carry" number.** A lender would stretch to 55% FOIR; that is their risk appetite, not her safety margin. |
-| **O3** | Nominal **10.5% – 13.8%** p.a. (centre 12.1%) · All-in APR **12.9% – 16.2%**. | Score 780 puts her near the best-priced end of the personal-loan range; large employer shaves a little more. APR gap over nominal = 2% processing fee + GST + ~1% single-premium insurance, *which is usually optional - refuse it*. |
+| **O3** | Nominal **10.5% – 12.8%** p.a. (centre 11.2%) · All-in APR **12.9% – 15.2%**. Priced on the **bank-tier** personal-loan band (10.5–16%). | Prime salaried + score 780 → a scheduled bank underwrites this, so the bank band applies, and she sits near its best-priced end; large employer shaves a little more. APR gap over nominal = 2% processing fee + GST + ~1% single-premium insurance, *which is usually optional - refuse it*. |
 | **O4** | EMI ceiling **₹22,000** (band ₹18,700–25,300). On ₹6.61 L: 3 yr → **₹22,000/mo, ₹1,31,000 interest**; 6 yr → ₹13,000/mo, ₹2,72,000 interest. | Ceiling is the lower of lender-allows (₹46,500) and budget-allows (₹22,000). **Stress:** income −20% → FOIR 41%, comfortable. Rate +2 pts → EMI ₹22,638, FOIR 33%, comfortable. |
 
 Confidence: **medium** — the app's own words: "You answered 2 of 10 relevant
@@ -64,16 +64,16 @@ numbers as the why-sentence above, as rows instead of a sentence):
 ### Negotiation Card
 
 > **My position** — Personal loan
-> I'm asking for **₹6.61 L** · Indicative rate **10.5%–13.8% p.a.** · Indicative
-> all-in APR **12.9%–16.2%** · My EMI ceiling **₹22,000** · Tenure **3 yrs (not 6)**
+> I'm asking for **₹6.61 L** · Indicative rate **10.5%–12.8% p.a.** · Indicative
+> all-in APR **12.9%–15.2%** · My EMI ceiling **₹22,000** · Tenure **3 yrs (not 6)**
 >
 > - This is an unsecured loan.
 > - Credit score 780.
-> - Fair all-in APR for my profile: 12.9%–16.2%. Anything above 17.7% APR is a markup.
+> - Fair all-in APR for my profile: 12.9%–15.2%. Anything above 16.7% APR is a markup.
 > - I will not cross an EMI of ₹22,000. Prefer 3 years over 6.
 > - I am asking for ₹6.61 L, which is what I can carry, not the maximum you will offer.
 >
-> **Walk-away condition:** If the offer's all-in APR is above 17.7% or the EMI
+> **Walk-away condition:** If the offer's all-in APR is above 16.7% or the EMI
 > above ₹22,000, I walk.
 >
 > **Ask the lender:** all-in APR (not just the rate) · processing fee, GST
@@ -114,7 +114,7 @@ variable-pay share, high-cost-debt balance.
 |---|---|---|
 | **O1** | **Borrow.** | You can borrow **₹15,00,000** - it fits both tests, as a **secured** loan against the shop, not an unsecured business loan. |
 | **O2** | A lender is likely to sanction **~₹20.2 L** (band ₹15.1–25.2 L) · You can safely carry **~₹19.4 L** (band ₹14.5–24.2 L). | **Use the "safely carry" number.** Assessed income ₹45,800 (ITR ₹35,000 + 35% of cash above ITR + half the wife's ₹18,000). After ₹19,200 essentials that leaves ₹26,600 for an EMI ≈ ₹19.4 L over 10 years. |
-| **O3** | Nominal **9.5% – 12.0%** p.a. (centre 11.0%) · All-in APR **9.8% – 12.3%**. | No score, but the loan is secured, so the collateral prices it - only a small thin-file premium, *not* the +3 points an unsecured lender would add. This is roughly half of the ~15–26% band `config.ts` assigns an *unsecured* business loan - the whole point of routing him to LAP. (Note: "roughly half" is the defensible claim - a specific point figure like "18–22%" is not something this app or `config.ts` states anywhere; treat any such number as illustrative shorthand, not a sourced claim.) |
+| **O3** | Nominal **9.5% – 12.5%** p.a. (centre 11.2%) · All-in APR **9.8% – 12.8%**. Priced on the **bank-tier** LAP band - property-backed lending stays bank-tier even on a thin file. | No score, but the loan is secured against property, so the collateral prices it - only a small thin-file premium, *not* the +3 points an unsecured lender would add. On an *unsecured* business loan his thin file + no ITR evidence would land him in the **NBFC tier at 14–30%**; the LAP roughly halves that. This is the whole point of routing him to LAP. (Treat "roughly half" as the defensible claim, not a specific point figure.) |
 | **O4** | EMI ceiling **₹22,900**. On ₹15 L: 10 yr → ₹20,600/mo, ₹9,74,000 interest; 15 yr → ₹17,000/mo, ₹15,60,000 interest. | **Stress:** income −20% → FOIR 56%, **tight**. Rate +2 pts → EMI ₹22,352, FOIR 49%, comfortable. The tight case is why he should take the 10-year term and not let a lender push 15. |
 
 Confidence: **low** (self-employed, no score, cash income unverified - the report
@@ -127,16 +127,16 @@ surplus**. Reason to lean "borrow" - not a reason the app lets him borrow more.
 ### Negotiation Card
 
 > **My position** — Loan against property (LAP)
-> I'm asking for **₹15 L** · Indicative rate **9.5%–12.0% p.a.** · Indicative
-> all-in APR **9.8%–12.3%** · My EMI ceiling **₹22,900** · Tenure **10 yrs (not 15)**
+> I'm asking for **₹15 L** · Indicative rate **9.5%–12.5% p.a.** · Indicative
+> all-in APR **9.8%–12.8%** · My EMI ceiling **₹22,900** · Tenure **10 yrs (not 15)**
 >
 > - This is a SECURED loan - price it as one, not as a personal loan.
 > - No bureau score - for a secured loan that barely matters.
-> - Fair all-in APR for my profile: 9.8%–12.3%. Anything above 13.8% APR is a markup.
+> - Fair all-in APR for my profile: 9.8%–12.8%. Anything above 14.3% APR is a markup.
 > - I will not cross an EMI of ₹22,900. Prefer 10 years over 15.
 > - I am asking for ₹15 L, which is what I can carry, not the maximum you will offer.
 >
-> **Walk-away condition:** If the offer's all-in APR is above 13.8% or the EMI
+> **Walk-away condition:** If the offer's all-in APR is above 14.3% or the EMI
 > above ₹22,900, I walk.
 >
 > **Ask the lender:** all-in APR (not just the rate) · processing fee, GST
@@ -146,12 +146,12 @@ surplus**. Reason to lean "borrow" - not a reason the app lets him borrow more.
 ### Quote Checker, run against this profile
 
 Suppose a lender quotes Ravi ₹15 L at **14.5%**, 120 months, no disclosed fee.
-Checked against his 9.8–12.3% fair APR band:
+Checked against his 9.8–12.8% fair APR band:
 
-> **This quote is above your fair range by 2.2%.**
+> **This quote is above your fair range by 1.7%.**
 > Their EMI ₹23,743 · Total repayment over the full tenure ₹28,49,162 ·
-> All-in APR on this quote **14.5%**, against a fair range of 9.8–12.3%.
-> Even against the TOP of that range, this quote costs about **₹2,66,685**
+> All-in APR on this quote **14.5%**, against a fair range of 9.8–12.8%.
+> Even against the TOP of that range, this quote costs about **₹2,14,391**
 > more in interest over the life of the loan. Ask the lender to explain the
 > premium, or walk.
 
@@ -189,7 +189,7 @@ co-applicant, upcoming large expense, existing lender relationship.
 |---|---|---|
 | **O1** | **Don't borrow** - not now, and not like this. | *After rent, essentials (₹10,000 + ₹18,000 for three dependents) and the app-loan repayments, there is nothing left for a new EMI; ₹15,600 of assessed income is fully spoken for.* Assessed income = ₹26,000 (low end) × 60% dependable. **Constructive path:** (1) replace the ₹35,000 of 28%+ debt with a gold or consolidation loan at 14–18%; (2) clear the bounce, three clean months; (3) add a co-applicant or wait for income to steady; (4) re-check in 3 months. |
 | **O2** | A lender is likely to sanction **~₹1,34,000** · You can safely carry **₹0**. | **Use the borrower number.** A lender's sanction math would still offer ~₹1.3 L; the household cannot service any of it. |
-| **O3** | Nominal **7.4% – 11.6%** (EV-scheme band) · All-in APR **14.4% – 18.8%**. | Shown as *what to ask for when she is ready*, not what to take now. A work EV qualifies for green-scheme rates; the wide APR is the flat documentation fee on a tiny principal. Score unknown → band widened, not penalised. |
+| **O3** | Nominal **12.4% – 16.6%** (NBFC EV-scheme band) · All-in APR **19.6% – 24.0%**. | Priced on the **NBFC / captive-financier** band: informal income means a bank branch will not finance this, so the bank EV band (7–11%) does not apply to her - an NBFC will, at a premium, and the "why" line says a co-applicant with salary slips or a LAP would move her to bank pricing. Score unknown → band widened around the NBFC midpoint, not penalised. Shown as *what to ask for when she is ready*, not what to take now. |
 | **O4** | EMI ceiling **₹0** - no room for a new EMI. On the ₹1,50,000 she asked for: 3 yr → ₹4,800/mo. | **Stress on the requested loan:** income −20% → FOIR 72%, **breaks**. Rate +2 pts → EMI ₹4,946, FOIR 59%, tight. Even the base case does not fit, which is why O1 is "don't". |
 
 Confidence: **low**.
@@ -217,8 +217,12 @@ Confidence: **low**.
   ₹23.7 L vs ₹6.6 L. Ravi: ₹20.2 L vs ₹19.4 L. The app always names which one binds.
 - **"Don't borrow" fires when it should** (Anita) and is unreachable by accident
   for the other two.
-- **Ravi is routed to a secured product** and priced at ~11%, roughly half of
-  the ~15–26% band `config.ts` assigns an unsecured business loan.
+- **Ravi is routed to a secured product** and priced at ~11% on the bank-tier
+  LAP band, roughly half of the 14–30% an unsecured business loan would cost him
+  (thin file + no ITR evidence would put him in the NBFC tier there).
+- **The bank / NBFC split is applied, not cosmetic.** Priya and Ravi are priced
+  on bank-tier bands; Anita, on informal income with no history, is priced on
+  the NBFC band for the same product - which is what actually happens at a branch.
 - **APR is honest about fees** in every case, and the Quote Checker turns that
   into a rupee number when a real lender quote comes in (Ravi's example above:
   a 14.5% quote costs him ₹2,66,685 more than the top of his fair band).

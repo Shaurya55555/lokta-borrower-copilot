@@ -21,8 +21,17 @@ export interface ProductBand {
   id: ProductId;
   label: string;
   secured: boolean;
-  /** nominal annual rate band, percent */
+  /** nominal annual rate ENVELOPE, percent - the full span from the best
+   *  bank-tier price to the worst NBFC-tier price. Pricing uses `rateByTier`;
+   *  this is kept for display and for clamping the quote checker. */
   rate: [number, number];
+  /** §6 - the same product priced by lender archetype. Real Indian retail
+   *  pricing bifurcates hard: a scheduled bank and an NBFC / fintech quote the
+   *  same borrower very different rates for the same product, and which one will
+   *  actually underwrite a given profile is itself a routing decision. `bank`
+   *  is the formal-sector band (PSU / large private bank); `nbfc` picks up
+   *  where the bank band ends and runs to the fintech ceiling. */
+  rateByTier: { bank: [number, number]; nbfc: [number, number] };
   /** processing fee as fraction of principal */
   fee: [number, number];
   /** flat add-on fee in rupees (e.g. two-wheeler docs) */
@@ -34,43 +43,74 @@ export interface ProductBand {
 }
 
 /** §6 - Interest-rate bands. Indicative Indian retail market, 2026. My judgement,
- *  informed by public SBI / HDFC / Bajaj / Muthoot rate cards. */
+ *  informed by public SBI / HDFC / Bajaj / Muthoot / Lendingkart rate cards.
+ *  `rate` is the display envelope; `rateByTier` is what pricing actually uses -
+ *  the NBFC band begins where the bank band ends. */
 export const PRODUCTS: Record<ProductId, ProductBand> = {
   home: {
     id: 'home', label: 'Home loan', secured: true,
-    rate: [8.4, 9.75], fee: [0.0025, 0.005], flatFee: 0,
+    rate: [8.4, 13.0],
+    rateByTier: { bank: [8.4, 10.0], nbfc: [10.0, 13.0] },
+    fee: [0.0025, 0.005], flatFee: 0,
     tenureMonths: [180, 360], bundledInsurance: 0,
   },
   lap: {
     id: 'lap', label: 'Loan against property (LAP)', secured: true,
-    rate: [9.5, 12.0], fee: [0.005, 0.015], flatFee: 0,
+    rate: [9.5, 19.0],
+    rateByTier: { bank: [9.5, 12.5], nbfc: [12.5, 19.0] },
+    fee: [0.005, 0.015], flatFee: 0,
     tenureMonths: [120, 180], bundledInsurance: 0,
   },
   personal: {
     id: 'personal', label: 'Personal loan', secured: false,
-    rate: [10.5, 24.0], fee: [0.01, 0.03], flatFee: 0,
+    rate: [10.5, 28.0],
+    rateByTier: { bank: [10.5, 16.0], nbfc: [16.0, 28.0] },
+    fee: [0.01, 0.03], flatFee: 0,
     tenureMonths: [36, 72], bundledInsurance: 0.01,
   },
   business_unsecured: {
     id: 'business_unsecured', label: 'Business loan (unsecured)', secured: false,
-    rate: [15.0, 26.0], fee: [0.02, 0.03], flatFee: 0,
+    rate: [14.0, 30.0],
+    rateByTier: { bank: [14.0, 19.0], nbfc: [19.0, 30.0] },
+    fee: [0.02, 0.03], flatFee: 0,
     tenureMonths: [36, 60], bundledInsurance: 0.008,
   },
   gold: {
     id: 'gold', label: 'Gold loan', secured: true,
-    rate: [9.0, 18.0], fee: [0.0025, 0.015], flatFee: 0,
+    rate: [8.5, 26.0],
+    rateByTier: { bank: [8.5, 14.0], nbfc: [14.0, 26.0] },
+    fee: [0.0025, 0.015], flatFee: 0,
     tenureMonths: [12, 36], bundledInsurance: 0,
   },
   two_wheeler: {
     id: 'two_wheeler', label: 'Two-wheeler loan', secured: true,
-    rate: [9.5, 22.0], fee: [0.01, 0.03], flatFee: 3000,
+    rate: [9.5, 24.0],
+    rateByTier: { bank: [9.5, 14.0], nbfc: [14.0, 24.0] },
+    fee: [0.01, 0.03], flatFee: 3000,
     tenureMonths: [36, 60], bundledInsurance: 0.008,
   },
   ev_two_wheeler: {
     id: 'ev_two_wheeler', label: 'EV two-wheeler loan (green scheme)', secured: true,
-    rate: [7.0, 12.0], fee: [0.01, 0.02], flatFee: 3000,
+    rate: [7.0, 18.0],
+    rateByTier: { bank: [7.0, 11.0], nbfc: [11.0, 18.0] },
+    fee: [0.01, 0.02], flatFee: 3000,
     tenureMonths: [36, 60], bundledInsurance: 0.008,
   },
+};
+
+/** §6.2 - which lender archetype will realistically price this borrower. The
+ *  bands above differ enough between tiers that this routing is a domain call,
+ *  not cosmetic. Rule (see RULES.md §6.2):
+ *   - a genuine thin file, informal income, or a KNOWN sub-`bankMinScore` score
+ *     on an UNSECURED loan → NBFC tier (a scheduled bank will usually decline;
+ *     an NBFC lends, at a premium).
+ *   - a secured loan with real collateral stays bank-tier unless the score is
+ *     known and below `securedFloorScore` (banks dominate secured retail).
+ *   - an UNKNOWN score is never on its own a demotion - unknown widens the
+ *     band, it does not move the borrower to a worse tier. */
+export const LENDER_TIER = {
+  bankMinScore: 700,      // unsecured: at/above this (or unknown) can be bank-tier
+  securedFloorScore: 650, // secured: only a known score below this forces NBFC
 };
 
 /** GST on financial-service fees (§7). */
