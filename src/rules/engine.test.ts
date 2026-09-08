@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { assess } from './engine';
 import { apr, emi } from './finance';
 import { checkQuote } from './quoteCheck';
+import { visibleQuestions } from '../questions/schema';
 import { PERSONAS } from '../personas';
 
 const byId = (id: string) => PERSONAS.find((p) => p.id === id)!.answers;
@@ -319,4 +320,24 @@ describe('lender-tier routing (bank band vs NBFC band)', () => {
     const weak = assess({ ...byId('priya'), creditScoreKnown: true, creditScore: 640 });
     expect(weak.rate.lenderTier).toBe('nbfc');
   });
+});
+
+describe('missingAnswers never lists a question the borrower cannot answer', () => {
+  const cases = [
+    byId('priya'),
+    byId('ravi'),
+    byId('anita'),
+    // big-ask borrower who owns no asset: `collateralValue` must NOT be listed
+    { ...byId('priya'), amountWanted: 900000, collateralType: 'none' as const },
+    // score-unknown salaried: `creditScore` must NOT be listed
+    { ...byId('priya'), creditScoreKnown: false, creditScore: undefined },
+  ];
+
+  for (const [i, a] of cases.entries()) {
+    it(`case ${i}: every missing answer maps to a visible question`, () => {
+      const visibleIds = new Set(visibleQuestions(a).map((q) => q.id));
+      const stuck = assess(a).missingAnswers.filter((m) => !visibleIds.has(m.field as keyof typeof a));
+      expect(stuck, `un-answerable: ${stuck.map((s) => s.field).join(', ')}`).toEqual([]);
+    });
+  }
 });
