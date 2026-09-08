@@ -36,8 +36,13 @@ function relevantAdditional(a: Answers): (keyof Answers)[] {
   if (a.incomeType === 'self_employed') base.push('incomeEvidence', 'cashIncomeHigh');
   if (a.incomeType === 'informal') base.push('cashIncomeHigh', 'coApplicant');
   if (a.incomeType === 'salaried') base.push('variablePayShareOfIncome', 'largeEmployer');
-  if (a.purpose === 'business_expansion' || a.purpose === 'working_capital' || (a.amountWanted ?? 0) > 500000)
-    base.push('collateralType', 'collateralValue');
+  if (a.purpose === 'business_expansion' || a.purpose === 'working_capital' || (a.amountWanted ?? 0) >= 500000) {
+    base.push('collateralType');
+    // `collateralValue` is only shown once a real asset type is picked (schema
+    // `show`), so only count it once it can actually be answered - otherwise a
+    // borrower who says "no asset" is stuck on a permanent "1 question left".
+    if (a.collateralType && a.collateralType !== 'none') base.push('collateralValue');
+  }
   if (a.loanIsProductive) base.push('expectedMonthlyReturnFromLoan');
   // score unknown: the only lever answerable from the fine-tuning list is the
   // thin-file flag. `creditScore` itself is a core question gated on "do you
@@ -199,9 +204,15 @@ export function assess(a: Answers): Assessment {
     .filter((k) => a[k] === undefined)
     .map((k) => ({ field: String(k), wouldDo: WHAT_ANSWER_DOES[k] ?? 'tightens one of the ranges' }));
 
-  const confidenceWhy = !a.creditScoreKnown
-    ? `You answered ${answeredCount} of ${relevant.length} relevant extra questions, and your credit score is unknown - both widen every range above.`
-    : `You answered ${answeredCount} of ${relevant.length} relevant extra questions. Answer more from "tighten these numbers" below to narrow the ranges further.`;
+  const allAnswered = answeredCount >= relevant.length;
+  const scoreUnknownNote = !a.creditScoreKnown
+    ? ' Your credit score is unknown, which is what still widens the rate band.'
+    : '';
+  const confidenceWhy = allAnswered
+    ? `You answered all ${relevant.length} relevant extra questions - the ranges above are as tight as your inputs allow.${scoreUnknownNote}`
+    : !a.creditScoreKnown
+      ? `You answered ${answeredCount} of ${relevant.length} relevant extra questions, and your credit score is unknown - both widen every range above.`
+      : `You answered ${answeredCount} of ${relevant.length} relevant extra questions. Answer more from "tighten these numbers" below to narrow the ranges further.`;
 
   const assumptionsUsed: string[] = [];
   if (a.emergencySavingsMonths === undefined) assumptionsUsed.push('Emergency savings assumed 0 months (conservative).');
