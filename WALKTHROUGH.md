@@ -169,9 +169,11 @@ action on the report, using the browser print path so nothing is stored.)
 
 ## Validation and iteration
 
-52 automated tests cover the finance math, adaptive question visibility,
+55 automated tests cover the finance math, adaptive question visibility,
 affordability ceilings, lender-tier (bank vs NBFC) routing, stress cases, all
-three personas, and quote analysis - not just arithmetic checks.
+three personas, and quote analysis - not just arithmetic checks. One is a sweep
+of ~860 borrower profiles that asserts a user who answers every visible
+question is never left with an un-answerable "N questions left".
 
 Three review passes were used deliberately to challenge the build before
 submitting it: domain-logic correctness, source attribution and numeric
