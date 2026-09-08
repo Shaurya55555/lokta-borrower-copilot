@@ -375,22 +375,30 @@ export default function App() {
               onClick={() => setShowMore((s) => !s)}
             >
               <span className="font-display text-[18px] text-ink">
-                Advanced · tighten these numbers · {result.missingAnswers.length} question
-                {result.missingAnswers.length === 1 ? '' : 's'} left
+                {result.missingAnswers.length === 0
+                  ? 'Advanced · every fine-tuning question answered'
+                  : `Advanced · tighten these numbers · ${result.missingAnswers.length} left`}
               </span>
               <span className="text-[18px] text-accent">{showMore ? '−' : '+'}</span>
             </button>
             {showMore && (
               <>
                 <p className="mt-1 text-[13px] text-muted">
-                  Every answer here changes a number above. Skip any - the range just stays wide, and
-                  the report says so.
+                  {result.missingAnswers.length === 0
+                    ? 'Nothing left to answer - the report above is as tight as your inputs allow. Change any answer and it re-runs live.'
+                    : 'Every answer here changes a number above. Skip any - the range just stays wide, and the report says so.'}
                 </p>
                 <div className="mt-2 divide-y divide-rule">
                   {additionalQs.map((q) => (
                     <Field key={q.id} q={q} answers={answers} onChange={setAnswer} />
                   ))}
                 </div>
+                <button
+                  className="mt-3 text-[13px] font-semibold text-accent hover:underline"
+                  onClick={() => jump('o1')}
+                >
+                  ↑ Back to the top of the report
+                </button>
               </>
             )}
           </section>

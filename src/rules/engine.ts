@@ -39,7 +39,11 @@ function relevantAdditional(a: Answers): (keyof Answers)[] {
   if (a.purpose === 'business_expansion' || a.purpose === 'working_capital' || (a.amountWanted ?? 0) > 500000)
     base.push('collateralType', 'collateralValue');
   if (a.loanIsProductive) base.push('expectedMonthlyReturnFromLoan');
-  if (!a.creditScoreKnown) base.push('creditScore', 'neverBorrowed');
+  // score unknown: the only lever answerable from the fine-tuning list is the
+  // thin-file flag. `creditScore` itself is a core question gated on "do you
+  // know your score = yes", so counting it here would show a question the
+  // borrower can never answer without going back and changing that answer.
+  if (a.creditScoreKnown === false) base.push('neverBorrowed');
   base.push('cardOutstanding', 'existingLenderRelationship');
   return base;
 }
