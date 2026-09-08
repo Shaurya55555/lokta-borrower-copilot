@@ -70,16 +70,12 @@ function rateAnswerCompleteness(a: Answers): number {
  * to the floor. Each factor shifts `t`; the shifts are the "why".
  */
 function pricePosition(a: Answers, secured: boolean, notes: string[]): number {
+  const P = RATE_ADJ.pos;
   let t = 0.5;
 
   if (a.creditScoreKnown && a.creditScore !== undefined) {
     const s = a.creditScore;
-    let d = 0;
-    if (s >= 800) d = -0.42;
-    else if (s >= 750) d = -0.3;
-    else if (s >= 700) d = -0.12;
-    else if (s >= 650) d = +0.28;
-    else d = +0.45;
+    const d = (P.score.find((b) => s >= b.min) ?? P.score[P.score.length - 1]).shift;
     t += d;
     notes.push(
       d < 0
@@ -90,7 +86,7 @@ function pricePosition(a: Answers, secured: boolean, notes: string[]): number {
     );
   } else if (a.neverBorrowed) {
     // genuine thin file - never taken a formal loan, so no score exists
-    t += secured ? +0.08 : +0.35;
+    t += secured ? P.thinFileSecured : P.thinFileUnsecured;
     notes.push(
       secured
         ? `No credit score because you have never borrowed - but the loan is secured, so the collateral prices it and the premium is small.`
@@ -104,19 +100,19 @@ function pricePosition(a: Answers, secured: boolean, notes: string[]): number {
   }
 
   if (a.largeEmployer) {
-    t -= 0.08;
+    t += P.largeEmployer;
     notes.push('Large / listed / government employer: a small discount.');
   }
   if (a.incomeType === 'self_employed' && !secured) {
-    t += 0.15;
+    t += P.selfEmployedUnsecured;
     notes.push('Self-employed on an unsecured loan: income-verification premium.');
   }
   if (a.incomeType === 'informal' && !secured) {
-    t += 0.3;
+    t += P.informalUnsecured;
     notes.push('Informal income on an unsecured loan: a large premium - or pledge an asset and re-price.');
   }
   if (a.existingLenderRelationship) {
-    t -= 0.04;
+    t += P.existingRelationship;
     notes.push('Existing lender relationship / salary account: a small discount.');
   }
   if (a.loanIsProductive) {

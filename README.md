@@ -11,7 +11,8 @@ borrower tells it, with no login, no bureau pull, and nothing stored:
 3. **What is a fair rate for me?** (a band, on bank-tier or NBFC-tier pricing, plus the all-in APR with fees)
 4. **What EMI should I agree to?** (a monthly ceiling, the tenure trade-off, and two stress cases)
 
-...then it prints a one-page **Negotiation Card** the borrower can hold up to a lender.
+...then it builds a one-page **Negotiation Card** the borrower can hold up to a
+lender, and the whole report saves to PDF (browser print, nothing stored).
 
 ---
 
@@ -35,7 +36,8 @@ npm run build   # type-check + production build to dist/
 
 On the landing screen, pick **Basic** (~10 core questions) or **Advanced** (adds
 the fine-tuning questions up front). Or click one of the sample borrowers -
-Priya, Ravi, Anita - to jump straight to a finished report.
+Priya, Ravi, Anita - to jump straight to a finished report. The report has a
+jump bar over the sections and a **Save as PDF** action.
 
 ---
 
@@ -62,7 +64,7 @@ src/
     finance.ts           ← EMI, present value, APR (IRR). Standard formulas, unit-tested.
     income.ts            ← assessed monthly income: haircuts, evidence tiers, co-applicant
     obligations.ts       ← existing monthly commitments (FOIR numerator)
-    routing.ts           ← which product this should even be (home / LAP / personal / gold / vehicle / EV)
+    routing.ts           ← which product this should even be (home / LAP / personal / unsecured business / gold / two-wheeler / EV)
     ceilings.ts          ← lender ceiling (FOIR) and borrower ceiling (affordability)
     rate.ts              ← lender tier (bank vs NBFC band), position within it, all-in APR
     stress.ts            ← income −20% and rate +2pts
@@ -71,8 +73,8 @@ src/
     engine.ts            ← assess(answers) → Assessment. Orchestrates the above. Builds the Card.
     engine.test.ts       ← finance math, Priya / Ravi / Anita, tier routing, stress, quote checker
   questions/
-    schema.ts            ← the question bank: 2 tiers (9 must + adaptive), show() gates, "what this moves"
-    schema.test.ts       ← the adaptive show() gates and must-set size, asserted
+    schema.ts            ← the question bank: 2 tiers (~10 core + adaptive fine-tuning), show() gates, "what this moves"
+    schema.test.ts       ← the adaptive show() gates and core-set size, asserted
   personas/
     index.ts             ← the three brief borrowers as answer sets (also used by the tests)
   components/             ← the UI. Reads Assessment, renders it. Holds no lending logic.

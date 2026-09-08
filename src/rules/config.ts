@@ -175,23 +175,30 @@ export const NON_PRODUCTIVE_PURPOSES = [
 /** unsecured ask above this multiple of monthly AMI → recommend secured if collateral exists */
 export const UNSECURED_ASK_INCOME_MULTIPLE = 15;
 
-/** §6.1 - rate adjustments (percentage points), applied to band midpoint. */
+/** §6.1 - where in the tier band the borrower lands. `pos.*` are shifts on a
+ *  0..1 POSITION scale within the band chosen in §6.2 (0 = band floor / cheapest,
+ *  1 = band ceiling / most expensive): start at 0.5 and add. A wide band like an
+ *  NBFC personal loan (16-28%) can't be priced by small point nudges off the
+ *  midpoint, so the score has to be able to move most of the way to the floor. */
 export const RATE_ADJ = {
-  score: [
-    { min: 800, adj: -2.0 },
-    { min: 750, adj: -1.0 },
-    { min: 700, adj: 0.0 },
-    { min: 650, adj: +2.5 },
-    { min: 0, adj: +4.0 },
-  ],
-  scoreUnknownWiden: 2.0,      // ± around midpoint, no centre penalty
-  thinFileSecured: +0.5,
-  thinFileUnsecured: +3.0,
-  largeEmployer: -0.5,
-  selfEmployedUnsecured: +1.5,
-  informalUnsecured: +3.0,
-  existingRelationship: -0.25,
-  /** O3 half-width: shrinks as additional questions are answered */
+  pos: {
+    /** credit-score bands, checked high-to-low; first `score >= min` wins */
+    score: [
+      { min: 800, shift: -0.42 },
+      { min: 750, shift: -0.30 },
+      { min: 700, shift: -0.12 },
+      { min: 650, shift: +0.28 },
+      { min: 0, shift: +0.45 },
+    ],
+    thinFileSecured: +0.08,   // never borrowed, but collateral prices it
+    thinFileUnsecured: +0.35, // no history to price on an unsecured loan
+    largeEmployer: -0.08,
+    selfEmployedUnsecured: +0.15,
+    informalUnsecured: +0.3,
+    existingRelationship: -0.04,
+  },
+  scoreUnknownWiden: 2.0,      // ± pts around the midpoint, no centre penalty
+  /** O3 half-width (pts): shrinks as additional questions are answered */
   residualUncertainty: { min: 0.75, max: 3.0 },
 };
 

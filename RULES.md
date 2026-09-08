@@ -28,7 +28,8 @@ answers
   ├─► LENDER ceiling  = FOIR math          §3 - what a lender will likely sanction
   ├─► BORROWER ceiling = affordability     §4 - what they can safely carry
   ├─► product routing                      §5 - which loan this should even be
-  ├─► rate band + all-in APR               §6,§7
+  ├─► lender tier (bank vs NBFC band)      §6.2
+  ├─► rate band + all-in APR               §6.1, §7
   ├─► verdict (borrow / less / don't)      §8
   ├─► EMI ceiling + tenure + stress        §9
   └─► confidence + defaults for silence    §10,§11
@@ -116,7 +117,7 @@ actually leaves the bank account each month, then see what is left for a new EMI
 | `subsistenceFloor` | **₹10,000 + ₹6,000 per dependent** (spouse counts if not earning) | Rough urban/semi-urban essentials per NSSO-style consumption bands | My judgement, order-of-magnitude from NSSO HCES 2022–23 |
 | Emergency-savings contribution | **10%** of AMI, protected, **unless** stated emergency savings ≥ 6 months of expenses | A borrower with no buffer who stops saving to pay an EMI is one shock from default | My judgement |
 | Income-volatility buffer | **0%** salaried · **10%** self-employed · **15%** informal, of AMI | Non-salaried need a cushion for the bad month the average hides | My judgement |
-| Consumption-loan prudence cap | New EMI additionally capped at **20% of net income** when the loan purpose is **non-productive** (wedding, travel, consumer durable, debt-funded lifestyle) | A discretionary want should not command more than a fifth of take-home; keeps the borrower liquid | My judgement |
+| Consumption-loan prudence cap | New EMI additionally capped at **20% of net income** when the loan purpose is **non-productive**: wedding, travel, consumer durable, planned medical, debt-funded lifestyle, other personal (`NON_PRODUCTIVE_PURPOSES` in `config.ts`) | A discretionary want should not command more than a fifth of take-home; keeps the borrower liquid | My judgement |
 
 **Borrower safe new EMI** = `AMI − (all deductions above)`, then apply the
 consumption cap if it bites. Floored at 0.
@@ -138,9 +139,8 @@ Route on **purpose + assets + amount**, before any pricing.
 | Situation | Routed product | Why | Source |
 |---|---|---|---|
 | Buying / building / renovating a home | **Home loan** | Cheapest secured money; purpose-locked | Market |
-| Owns property (any equity), wants funds for anything | **Loan against property (LAP)** | Unlocks the asset at a fraction of unsecured cost | Market |
-| Business / working capital **and** owns property | **LAP or secured business loan** - *not* unsecured | This is the Ravi case: collateral should do the talking, not a score he doesn't have | My judgement + brief scoring note |
-| Business / working capital, **no** collateral | Unsecured business loan (small ticket, high rate) | Only option; app must show how small and how expensive | Market |
+| Business / working capital **and** owns unencumbered property | **LAP**, capped at the property's LTV - *not* unsecured | This is the Ravi case: collateral should do the talking, not a score he doesn't have | My judgement + brief scoring note |
+| Business / working capital, **no** collateral | Unsecured business loan (small ticket, high rate); if property exists the app says "add it and re-run" | Only option without an asset; app must show how small and how expensive | Market |
 | Vehicle purchase (2W / 4W) | **Vehicle loan** (hypothecation-secured) | Secured by the vehicle; far cheaper than a personal loan for the same thing | Market |
 | Vehicle is an **EV**, purpose is livelihood | Flag **EV / green financing schemes** (OEM tie-ups, some PSU/NBFC) | Materially cheaper band exists; borrower should ask for it by name | My judgement |
 | Has gold, needs fast small-ticket funds | **Gold loan** | Same-day, no income proof, cheaper than personal | Market |
@@ -176,28 +176,33 @@ ceiling); it is display-only and used to clamp the Quote Checker.
 
 ### 6.1 Where in the band a borrower lands
 
-First pick the tier band (§6.2). Within it, start at the **band midpoint**, then
-apply additive adjustments (percentage points), clamped to that band:
+First pick the tier band (§6.2). A wide band (an NBFC personal loan is 16-28%)
+can't be priced by small point-nudges off the midpoint, so the model works in
+**band position** `t`, a 0-to-1 number where 0 is the band floor (cheapest) and
+1 is the ceiling. Start at `t = 0.5` and add the shifts below; the nominal rate
+is then `bandLo + t x (bandHi - bandLo)`, clamped to the band. All values are in
+`config.ts` as `RATE_ADJ.pos`.
 
-| Factor | Adjustment | Why | Source |
+| Factor | Position shift | Why | Source |
 |---|---|---|---|
-| Credit score ≥ 800 | −2.0 | Prime; lenders compete for them | My judgement |
-| Score 750 – 799 | −1.0 | | |
-| Score 700 – 749 | 0.0 | Reference band | |
-| Score 650 – 699 | +2.5 | Sub-prime pricing | |
-| Score < 650 | +4.0, and **decline unsecured** if also FOIR-stressed | | |
-| **Score unknown** (never checked) | Widen band by **±2.0** around midpoint; **no penalty to the centre**; confidence → low | "I don't know my score" is not a 300 (brief rule 3) | Brief |
-| **Thin file** - never borrowed, no score (Ravi) | For **secured**: midpoint +0.5, near-normal - secured rate barely uses score. For **unsecured**: +3.0 and low confidence | Collateral prices the loan, not history | My judgement |
-| Salaried at large/listed/government employer | −0.5 | Lower attrition/default risk category | My judgement |
-| Self-employed (priced unsecured) | +1.5 | Income-verification risk premium | My judgement |
-| Informal income (priced unsecured) | +3.0, or steer to secured | | My judgement |
-| Existing lender relationship / salary account | −0.25 | Cross-sell discount is real | My judgement |
-| Loan is **productive** (income-generating) | **0.0 to the rate** - but note it in the "why" | Honesty: a lender prices risk, not your business plan. It helps the *verdict*, not the *quote* | My judgement |
+| Credit score ≥ 800 | **−0.42** | Prime; lenders compete for them | My judgement |
+| Score 750 – 799 | **−0.30** | | |
+| Score 700 – 749 | **−0.12** | Near the reference midpoint | |
+| Score 650 – 699 | **+0.28** | Sub-prime pricing | |
+| Score < 650 | **+0.45** (verdict may also decline an unsecured loan if FOIR-stressed, §8) | | |
+| **Score unknown** (has borrowed, hasn't checked) | No centre shift. Band half-width forced to **±2.0 pts**; confidence → low | "I don't know my score" is not a 300 (brief rule 3) | Brief |
+| **Thin file** - never borrowed, no score (Ravi) | Secured **+0.08** (collateral prices it), unsecured **+0.35** and low confidence | Collateral prices the loan, not history | My judgement |
+| Salaried at large / listed / government employer | **−0.08** | Lower attrition / default risk category | My judgement |
+| Self-employed, priced unsecured | **+0.15** | Income-verification risk premium | My judgement |
+| Informal income, priced unsecured | **+0.30** (or route to secured, §5) | | My judgement |
+| Existing lender relationship / salary account | **−0.04** | Cross-sell discount is real | My judgement |
+| Loan is **productive** (income-generating) | **0.0** - noted in the "why" only | A lender prices risk, not your business plan. It helps the *verdict*, not the *quote* | My judgement |
 
-Output O3 is a **band**: `[adjusted − residualUncertainty, adjusted +
-residualUncertainty]` where `residualUncertainty` shrinks from **±3.0** (only
-must-questions answered) to **±0.75** (all relevant additional questions
-answered).
+Output O3 is a **band**, not a point: `centre ± residualUncertainty` in
+percentage points, where `residualUncertainty` shrinks from **±3.0** (only the
+core questions answered) toward **±0.75** as the rate-relevant fine-tuning
+questions are answered, and is floored at **±2.0** whenever the credit score is
+unknown or overall confidence is low. The band is clamped to the tier band.
 
 ### 6.2 Which tier prices this borrower
 
@@ -258,10 +263,8 @@ what smaller/secured alternative exists, when to re-check) - never a dead end.
 
 | Trigger | Recommended amount |
 |---|---|
-| Requested > `min(lender, borrower)` safe principal by > **10%** | The `min(...)` safe principal |
-| Requested ≤ lender ceiling but > borrower safe principal | The borrower safe principal, with the gap named |
-| FOIR fine but emergency savings < **2 months** | Smaller amount that keeps EMI ≤ 15% of AMI, plus "build a buffer first" |
-| Non-productive purpose stretching FOIR past **45%** | Amount that lands FOIR at 40% |
+| Requested > `min(lender, borrower)` safe principal by > **10%** | The `min(...)` safe principal, naming which one binds |
+| FOIR fine but emergency savings < **2 months** and the loan is unsecured | About **75%** of the borrower safe principal, plus "build a buffer first" |
 
 ### 8.3 "Borrow" (as requested) - all of:
 
@@ -297,7 +300,7 @@ years."*
 | What | Value | Why | Source |
 |---|---|---|---|
 | Confidence inputs | (a) # of relevant additional questions answered, (b) AMI confidence §1, (c) score known?, (d) income type | These are what actually move uncertainty | My judgement |
-| Levels | **Low** (must-set only, or informal + no score) · **Medium** (some additional, or documented self-employed) · **High** (all relevant additional answered, salaried, score known) | | |
+| Levels | **Low** (core set only, or informal + no score) · **Medium** (some fine-tuning answered, or documented self-employed) · **High** (all relevant fine-tuning answered, salaried, score known) | | |
 | Effect on O2 (amount) | Low → report a **±25%** band around the point · Medium → ±15% · High → ±8% | Fewer answers, wider band (brief rule 2) | My judgement |
 | Effect on O3 (rate) | `residualUncertainty` ±3.0 → ±0.75 as above | | §6 |
 | Effect on O4 (EMI) | Ceiling shown as a range with the same width as O2 | Consistency | My judgement |
@@ -409,3 +412,6 @@ everywhere else in the app - never a second pricing model.
 | 2026-09-08 | Tightened the must-set to 9 questions: moved rent, household spend and the thin-file check to the additional tier (each already has a conservative default in §11, so a skip widens the band, never blocks the report). Softened "what a lender will sanction" to "our estimate of what a lender is likely to sanction" in the verdict text, matching §3 and the O2 label | Keeps the must-set genuinely tight (brief rule on question design) and removes the one place the copy sounded more certain than the model is |
 | 2026-09-08 | Split every product's rate band into a **bank tier** and an **NBFC / fintech tier** (§6), added §6.2 tier-routing in `rate.ts` (`lenderTier()`), surfaced the tier and its reason in O3, added 5 tests | Real Indian retail pricing bifurcates hard by lender archetype; pricing a thin-file informal borrower on bank rates was the one place the rate model was optimistic. Unknown score still never demotes a tier (rule 3). Personas: Priya/Ravi bank, Anita NBFC |
 | 2026-09-08 | Moved household spend back into the main (must) question flow; it keeps its subsistence-floor default from §11, so a skip still produces the report. Must-set is now ~10; rent and the thin-file check stay in the additional tier | It is load-bearing for "what you can safely carry" and a borrower is far more likely to answer it when it is asked up front rather than buried under an optional section |
+| 2026-09-08 | Moved the §6.1 rate-position shifts out of a hardcoded block in `rate.ts` and into `config.ts` (`RATE_ADJ.pos`); rewrote §6.1 to describe the actual 0-1 band-position model instead of the older point-nudge table. Removed the dead point-value fields | The one place a pricing rule was not in the single config file, which contradicts the whole "change one number" design. No output changed (52 tests unmoved) |
+| 2026-09-08 | Added **Basic / Advanced** entry modes: Basic asks the ~10 core questions then prompts for the rest on the report; Advanced adds the fine-tuning questions up front. Same engine and defaults for both | Progressive disclosure - a two-minute path and a thorough path from one landing screen, without a longer mandatory form |
+| 2026-09-08 | Added **Save as PDF** on the report (browser print path, nothing stored): print-only header with product name, date and the "not a lender offer" disclaimer; the assumptions block prints, the jump bar / tighten panel / quote checker do not | The brief wants the borrower to carry the Card into a branch; a saved page does that without persistence |

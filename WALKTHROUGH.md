@@ -9,12 +9,14 @@ next, and what I deliberately left out.
 
 A borrower opens the app, answers ~10 questions, and gets a report with four
 outputs and a one-page Negotiation Card. No login, no bureau pull, nothing
-stored. Try `npm run dev` then **"try a sample borrower"** for Priya, Ravi or
-Anita.
+stored. Try `npm run dev`, then on the landing screen click a sample borrower
+(Priya, Ravi or Anita) to jump straight to a finished report.
 
 Two ways in: **Basic** (the ~10 core questions, then the report, which then
 prompts for the rest) or **Advanced** (the core plus the ~10 fine-tuning
-questions up front, for a tight report in one pass). Same engine either way.
+questions up front, for a tight report in one pass). Same engine either way. The
+finished report exports to PDF (browser print) with a dated header and the
+disclaimer built in.
 
 The report is live: the four outputs appear as soon as the core questions are
 answered, and every fine-tuning answer re-runs the assessment and visibly
@@ -52,15 +54,16 @@ has nothing. So the engine computes **two** numbers from the same answers:
   *prudent* tenure.
 
 O2 shows both side by side and tells the borrower to use the lower one, in one
-sentence naming why it binds. For Priya the gap is ₹23.7 L vs ₹6.6 L; the
-20%-of-take-home cap on a wedding loan is doing the work, and the report says so.
+sentence naming why it binds. For Priya the gap is ₹24.3 L vs ₹6.7 L; the
+20%-of-take-home cap on a discretionary loan is doing the work, and the report
+says so.
 
 ### 3. Silence widens, it never narrows
 
-Answer only the must-set and every range is wide and labelled low confidence.
-Each additional question is gated - `schema.ts` has a `show()` per question, and
-the engine only counts a question as "relevant" if it can move an output for
-*this* borrower. A skipped question substitutes a conservative default
+Answer only the ~10 core questions and every range is wide and labelled low
+confidence. Each fine-tuning question is gated - `schema.ts` has a `show()` per
+question, and the engine only counts a question as "relevant" if it can move an
+output for *this* borrower. A skipped question substitutes a conservative default
 (`RULES.md` §11) and widens; it never tightens anything it has no basis to
 tighten.
 
@@ -131,11 +134,14 @@ eligibility than they actually have.
    the affordability ceilings (`ceilings.ts`) still use one market-average FOIR
    curve, and the same borrower gets materially different answers from each
    archetype.
-4. **Save/share the report** as a signed URL or a PDF, so the borrower can
-   actually carry the Card into a branch without the tab open. (Kept out for now
-   - "nothing stored" was a deliberate constraint.)
+4. **Side-by-side product comparison.** Run the same borrower against two routed
+   products at once (e.g. LAP vs unsecured business) so the rate and amount gap
+   is on one screen instead of two runs.
 5. **Regional-language copy.** Anita is the borrower who needs this tool most and
    is least likely to read it in English.
+
+(Report export to PDF was on this list and is now shipped - a "Save as PDF"
+action on the report, using the browser print path so nothing is stored.)
 
 ---
 
@@ -143,14 +149,16 @@ eligibility than they actually have.
 
 - **A credit model.** The brief said self-assessment, not scoring. Assessed
   income uses documented haircuts, not a learned function.
-- **More loan products.** The engine routes the six the three borrowers need
-  (home, LAP, personal, gold, two-wheeler, EV). Education loans, top-ups,
-  overdrafts, BNPL - all out; adding them is a config entry, not a rewrite.
+- **More loan products.** The engine routes seven (home, LAP, personal,
+  unsecured business, gold, two-wheeler, EV green scheme). Education loans,
+  top-ups, overdrafts, BNPL - all out; adding one is a config entry, not a
+  rewrite.
 - **A bureau integration and any persistence.** Both were explicit non-goals and
   both would have eaten the time box.
-- **Pixel polish.** The UI is clean, mobile-first, and prints the Card, but I
-  spent the hours on the domain logic and `RULES.md`, which is where the score is.
-- **An onboarding wizard / progress bar / animations.** The must-questions are
+- **Pixel polish.** The UI is clean, mobile-first, has a jump bar over the
+  report, and exports the whole thing to PDF, but I spent the hours on the
+  domain logic and `RULES.md`, which is where the score is.
+- **An onboarding wizard / progress bar / animations.** The core questions are
   one scrollable page; the report is one scrollable page. Fewer screens, less to
   misread.
 - **Handling every income edge case** (pensioners, NRIs, agricultural income,
