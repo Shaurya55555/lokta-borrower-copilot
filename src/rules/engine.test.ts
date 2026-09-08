@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { assess } from './engine';
 import { apr, emi } from './finance';
 import { checkQuote } from './quoteCheck';
+import type { Answers } from './types';
 import { visibleQuestions } from '../questions/schema';
 import { PERSONAS } from '../personas';
 
@@ -323,21 +324,105 @@ describe('lender-tier routing (bank band vs NBFC band)', () => {
 });
 
 describe('missingAnswers never lists a question the borrower cannot answer', () => {
-  const cases = [
-    byId('priya'),
-    byId('ravi'),
-    byId('anita'),
-    // big-ask borrower who owns no asset: `collateralValue` must NOT be listed
-    { ...byId('priya'), amountWanted: 900000, collateralType: 'none' as const },
-    // score-unknown salaried: `creditScore` must NOT be listed
-    { ...byId('priya'), creditScoreKnown: false, creditScore: undefined },
-  ];
+  // A plausible value for a question, given its field type. `select` picks the
+  // LAST choice so `collateralType` lands on a real asset (not "none"), which
+  // is the path that opens the most downstream questions.
+  const fill = (q: ReturnType<typeof visibleQuestions>[number]): unknown => {
+    // `true` and a real asset type open the MOST downstream questions - the
+    // direction most likely to expose a counted-but-hidden follow-up.
+    if (q.type === 'boolean') return true;
+    if (q.type === 'select') return q.choices![q.choices!.length - 1].value;
+    if (q.type === 'percent') return 0.1;
+    if (q.type === 'money') return 250000;
+    return 2; // number
+  };
 
-  for (const [i, a] of cases.entries()) {
-    it(`case ${i}: every missing answer maps to a visible question`, () => {
-      const visibleIds = new Set(visibleQuestions(a).map((q) => q.id));
-      const stuck = assess(a).missingAnswers.filter((m) => !visibleIds.has(m.field as keyof typeof a));
-      expect(stuck, `un-answerable: ${stuck.map((s) => s.field).join(', ')}`).toEqual([]);
-    });
-  }
+  // Answer every visible fine-tuning (and gated core) question, repeatedly,
+  // until the visible set stops growing - exactly what a user does when they
+  // "fill everything in".
+  const fillEverything = (start: Answers): Answers => {
+    let a: Answers = { ...start };
+    for (let pass = 0; pass < 15; pass++) {
+      const todo = visibleQuestions(a).filter((q) => a[q.id] === undefined);
+      if (todo.length === 0) return a;
+      for (const q of todo) a = { ...a, [q.id]: fill(q) };
+    }
+    return a;
+  };
+
+  const incomeTypes = ['salaried', 'self_employed', 'informal'] as const;
+  // every LoanPurpose the schema accepts
+  const purposes = [
+    'home_purchase',
+    'home_renovation',
+    'business_expansion',
+    'working_capital',
+    'vehicle',
+    'wedding',
+    'medical_elective',
+    'travel',
+    'consumer_durable',
+    'debt_consolidation_lifestyle',
+    'education',
+    'other_consumption',
+  ] as const;
+  const amounts = [150000, 500000, 900000];
+  const scoreKnown = [true, false];
+  // include the "no asset" seed explicitly - that is the path where a follow-up
+  // question stays hidden, which is how the real bug slipped through
+  const collateralSeeds = [undefined, 'none', 'residential', 'gold'] as const;
+
+  const cases: Answers[] = [];
+  let n = 0;
+  for (const incomeType of incomeTypes)
+    for (const purpose of purposes)
+      for (const amountWanted of amounts)
+        for (const creditScoreKnown of scoreKnown)
+          for (const collateralType of collateralSeeds) {
+            cases.push({
+              purpose,
+              amountWanted,
+              incomeType,
+              netMonthlyIncome: 60000,
+              existingEmiTotal: 0,
+              age: 35,
+              dependents: 1,
+              creditScoreKnown,
+              ...(creditScoreKnown ? { creditScore: 720 } : {}),
+              loanIsProductive: n++ % 2 === 0,
+              ...(collateralType ? { collateralType } : {}),
+            });
+          }
+
+  it(`covers ${cases.length} borrower profiles`, () => {
+    expect(cases.length).toBeGreaterThan(600);
+  });
+
+  it('once every visible question is answered, "N questions left" is 0 for every profile', () => {
+    const failures: string[] = [];
+    for (const base of cases) {
+      const stuck = assess(fillEverything(base)).missingAnswers.map((m) => m.field);
+      if (stuck.length > 0) failures.push(`${JSON.stringify(base)} -> stuck on [${stuck.join(', ')}]`);
+    }
+    expect(failures, `${failures.length} stuck:\n${failures.slice(0, 8).join('\n')}`).toEqual([]);
+  });
+
+  it('missingAnswers is always a subset of the currently visible questions (spot-checked profiles)', () => {
+    const failures: string[] = [];
+    for (const base of [byId('priya'), byId('ravi'), byId('anita'), ...cases.filter((_, i) => i % 7 === 0)]) {
+      let a: Answers = { ...base };
+      for (let pass = 0; pass < 15; pass++) {
+        const visibleIds = new Set<string>(visibleQuestions(a).map((q) => String(q.id)));
+        const stuck = assess(a).missingAnswers.filter((m) => !visibleIds.has(m.field));
+        if (stuck.length > 0) {
+          failures.push(`${JSON.stringify(a)} -> [${stuck.map((s) => s.field).join(', ')}]`);
+          break;
+        }
+        const todo = visibleQuestions(a).filter((q) => a[q.id] === undefined);
+        if (todo.length === 0) break;
+        a = { ...a, [todo[0].id]: fill(todo[0]) };
+      }
+    }
+    expect(failures, failures.slice(0, 8).join('\n')).toEqual([]);
+  });
 });
