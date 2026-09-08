@@ -64,81 +64,96 @@ export default function App() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:py-12">
-      <header className="no-print border-b border-rule pb-4">
-        <div className="flex items-start justify-between gap-3">
-          <button
-            type="button"
-            onClick={() => setStage('intro')}
-            className="group text-left"
-            title="Back to start"
-          >
-            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-muted group-hover:text-accent">
-              Borrower Copilot
-            </span>
-            <span className="mt-1 block font-display text-[26px] leading-tight text-ink sm:text-[32px]">
-              Know your numbers <em className="text-accent">before</em> you walk into a lender.
-            </span>
-          </button>
-          {stage !== 'intro' && (
-            <button
-              type="button"
-              onClick={() => setStage('intro')}
-              className="mt-0.5 shrink-0 rounded-full border border-rule px-3 py-1 text-[12px] font-semibold text-muted hover:border-accent hover:text-accent"
-            >
-              Home
-            </button>
-          )}
-        </div>
-        <p className="mt-2 text-[14px] text-muted">
-          Four answers: whether to borrow, how much, at what rate, and the EMI to hold the line on.
-          No login, no credit check, nothing stored - everything runs from what you tell it.
-        </p>
+      <header className="no-print flex items-center justify-between border-b border-rule pb-3">
+        <button
+          type="button"
+          onClick={() => setStage('intro')}
+          className="group flex items-center gap-2"
+          title="Home"
+        >
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-rule text-accent transition-colors group-hover:border-accent group-hover:bg-accent-soft">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 10.5 12 4l9 6.5" />
+              <path d="M5 9.5V20h14V9.5" />
+            </svg>
+          </span>
+          <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-muted group-hover:text-accent">
+            Borrower Copilot
+          </span>
+        </button>
+        {stage !== 'intro' && (
+          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
+            {stage === 'results' ? 'Your report' : 'The basics'}
+          </span>
+        )}
       </header>
 
       {stage === 'intro' && (
-        <div className="mt-6 space-y-4">
-          <div className="rounded-md border border-rule bg-paper2 p-4">
-            <p className="font-display text-[18px] text-ink">What you'll get</p>
-            <ol className="mt-2 space-y-1 text-[14px] text-muted">
-              <li>
-                <b className="text-ink">1.</b> Whether to borrow at all - borrow, borrow less, or don't.
-              </li>
-              <li>
-                <b className="text-ink">2.</b> How much: what a lender is likely to sanction vs. what
-                you can safely carry.
-              </li>
-              <li>
-                <b className="text-ink">3.</b> A fair interest-rate range and the all-in APR with fees.
-              </li>
-              <li>
-                <b className="text-ink">4.</b> An EMI ceiling to hold the line on, plus a one-page
-                Negotiation Card.
-              </li>
-            </ol>
-            <p className="mt-2 text-[12px] font-semibold text-accent">
-              This isn't a loan application. It doesn't touch your credit score. Nothing is stored.
+        <div className="mt-10 sm:mt-14">
+          {/* Hero */}
+          <div className="text-center">
+            <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">
+              Borrower-side loan self-assessment
             </p>
+            <h1 className="mx-auto mt-4 max-w-xl font-display leading-[1.05] text-ink">
+              <span className="block text-[24px] italic text-muted sm:text-[30px]">
+                Should you take this loan?
+              </span>
+              <span className="mt-1 block text-[36px] font-semibold sm:text-[50px]">
+                See your real numbers first.
+              </span>
+            </h1>
+            <p className="mx-auto mt-4 max-w-md text-[15px] text-muted">
+              Four answers from what you tell it. No login, no credit check, nothing stored.
+            </p>
+            <div className="mt-7 flex flex-col items-center gap-2">
+              <button className="btn-primary px-6" onClick={() => setStage('questions')}>
+                {hasAnswers ? 'Resume where you left off →' : 'Start assessment →'}
+              </button>
+              {hasAnswers ? (
+                <button
+                  className="text-[12px] font-semibold text-muted hover:text-accent"
+                  onClick={() => setAnswers({})}
+                >
+                  or clear my answers and start fresh
+                </button>
+              ) : (
+                <span className="text-[12px] text-muted">about 9 quick questions · around 2 minutes</span>
+              )}
+            </div>
           </div>
-          <button className="btn-primary w-full" onClick={() => setStage('questions')}>
-            {hasAnswers ? 'Resume where you left off' : 'Start - answer about 9 quick questions'}
-          </button>
-          {hasAnswers && (
-            <button
-              className="-mt-2 block text-[12px] font-semibold text-muted hover:text-accent"
-              onClick={() => setAnswers({})}
-            >
-              Clear my answers and start fresh
-            </button>
-          )}
-          <div>
-            <p className="text-[13px] font-semibold text-muted">
-              …or load a sample borrower to see a finished report
+
+          {/* What you get */}
+          <div className="mt-12 border-t border-rule pt-6">
+            <p className="text-center font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-muted">
+              What you get
             </p>
-            <div className="mt-2 grid gap-2 sm:grid-cols-3">
+            <div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-6 sm:grid-cols-4 sm:divide-x sm:divide-rule">
+              {[
+                ['01', 'Verdict', "Borrow, borrow less, or don't - with the reason it lands there"],
+                ['02', 'How much', 'What a lender may sanction vs. what you can safely carry'],
+                ['03', 'Fair rate', 'A rate band, and the all-in APR once fees and GST are in'],
+                ['04', 'EMI ceiling', 'A monthly cap to hold the line on, plus a one-page Negotiation Card'],
+              ].map(([n, t, d]) => (
+                <div key={n} className="sm:px-4 sm:first:pl-0 sm:last:pr-0">
+                  <p className="font-mono text-[12px] font-semibold text-accent">{n}</p>
+                  <p className="mt-1 text-[14px] font-semibold text-ink">{t}</p>
+                  <p className="mt-1 text-[12px] leading-snug text-muted">{d}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Sample borrowers */}
+          <div className="mt-10 border-t border-rule pt-6">
+            <p className="text-center font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-muted">
+              Or preview with a sample borrower
+            </p>
+            <div className="mt-4 grid gap-2 sm:grid-cols-3">
               {PERSONAS.map((p) => (
                 <button
                   key={p.id}
-                  className="card block h-full w-full p-3 text-left hover:bg-paper2"
+                  className="card block h-full w-full p-3 text-left transition-colors hover:border-accent/40 hover:bg-paper2"
                   onClick={() => loadPersona(p.id)}
                 >
                   <p className="text-[13px] font-semibold text-ink">{p.name}</p>
@@ -147,9 +162,11 @@ export default function App() {
               ))}
             </div>
           </div>
-          <p className="text-[12px] text-muted">
-            Rates and rules are indicative of the Indian market in 2026 and documented in RULES.md at
-            the repo root. A real offer can sit outside them.
+
+          <p className="mx-auto mt-10 max-w-md text-center text-[12px] leading-relaxed text-muted">
+            Not a loan application, and it doesn't touch your credit score. Rates and rules are
+            indicative of the Indian market in 2026 and documented in RULES.md; a real offer can sit
+            outside them.
           </p>
         </div>
       )}
