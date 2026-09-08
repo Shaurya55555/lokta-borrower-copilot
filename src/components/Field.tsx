@@ -13,7 +13,7 @@ export function Field({ q, answers, onChange }: Props) {
   const raw = answers[q.id];
 
   return (
-    <div className="py-3">
+    <div id={`q-${String(q.id)}`} className="scroll-mt-20 py-3">
       <label className="block text-[15px] font-semibold text-ink" htmlFor={String(q.id)}>
         {q.label}
       </label>

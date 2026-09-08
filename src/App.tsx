@@ -246,17 +246,36 @@ export default function App() {
             </div>
           )}
 
-          <div className="sticky bottom-0 -mx-4 mt-6 flex gap-2 border-t border-rule bg-paper/95 px-4 py-3 backdrop-blur">
-            <button className="btn-ghost" onClick={() => setStage('intro')}>
-              Back
-            </button>
-            <button
-              className="btn-primary flex-1"
-              disabled={!mustDone}
-              onClick={() => setStage('results')}
-            >
-              {mustDone ? 'See my numbers →' : `${missingRequired} required question${missingRequired > 1 ? 's' : ''} left`}
-            </button>
+          <div className="sticky bottom-0 -mx-4 mt-6 border-t border-rule bg-paper/95 px-4 py-3 backdrop-blur">
+            <div className="flex gap-2">
+              <button className="btn-ghost" onClick={() => setStage('intro')}>
+                Back
+              </button>
+              {mustDone ? (
+                <button className="btn-primary flex-1" onClick={() => setStage('results')}>
+                  See my numbers →
+                </button>
+              ) : (
+                <button
+                  className="btn-primary flex-1"
+                  onClick={() => {
+                    const id = requiredQs.find((q) => answers[q.id] === undefined)?.id;
+                    if (id)
+                      document
+                        .getElementById(`q-${String(id)}`)
+                        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }}
+                >
+                  Answer {missingRequired} core question{missingRequired > 1 ? 's' : ''} first →
+                </button>
+              )}
+            </div>
+            {!mustDone && (
+              <p className="mt-1.5 text-center text-[12px] text-muted">
+                The report unlocks once the {requiredQs.length} core questions are answered. Tap
+                above to jump to the next one.
+              </p>
+            )}
           </div>
         </div>
       )}
