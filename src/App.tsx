@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { assess } from './rules/engine';
 import type { Answers } from './rules/types';
 import { QUESTIONS, incomeFieldLabel, visibleQuestions, type Question } from './questions/schema';
@@ -19,6 +19,24 @@ export default function App() {
   const [stage, setStage] = useState<Stage>('intro');
   const [answers, setAnswers] = useState<Answers>({});
   const [showMore, setShowMore] = useState(true);
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  // On stage change, put the user at the right place instead of leaving them
+  // wherever they had scrolled to on the previous screen.
+  useEffect(() => {
+    if (stage === 'results') {
+      resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [stage]);
+
+  const jump = (id: string) => {
+    if (id === 'tighten') setShowMore(true);
+    requestAnimationFrame(() =>
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+    );
+  };
 
   const setAnswer = (id: keyof Answers, value: unknown) =>
     setAnswers((prev) => {
@@ -61,21 +79,34 @@ export default function App() {
       {stage === 'intro' && (
         <div className="mt-6 space-y-4">
           <div className="rounded-md border border-rule bg-paper2 p-4">
-            <p className="font-display text-[18px] text-ink">Before we calculate anything</p>
-            <p className="mt-1.5 text-[14px] text-muted">
-              Let's first figure out whether borrowing makes sense for you. Then we'll work out how
-              much you can safely carry, what a fair rate looks like, and what to say yes to when a
-              lender gives you an offer.
-            </p>
+            <p className="font-display text-[18px] text-ink">What you'll get</p>
+            <ol className="mt-2 space-y-1 text-[14px] text-muted">
+              <li>
+                <b className="text-ink">1.</b> Whether to borrow at all - borrow, borrow less, or don't.
+              </li>
+              <li>
+                <b className="text-ink">2.</b> How much: what a lender is likely to sanction vs. what
+                you can safely carry.
+              </li>
+              <li>
+                <b className="text-ink">3.</b> A fair interest-rate range and the all-in APR with fees.
+              </li>
+              <li>
+                <b className="text-ink">4.</b> An EMI ceiling to hold the line on, plus a one-page
+                Negotiation Card.
+              </li>
+            </ol>
             <p className="mt-2 text-[12px] font-semibold text-accent">
-              This isn't a loan application. It doesn't touch your credit score.
+              This isn't a loan application. It doesn't touch your credit score. Nothing is stored.
             </p>
           </div>
           <button className="btn-primary w-full" onClick={() => setStage('questions')}>
-            Start assessment - about 9 questions
+            Start - answer about 9 quick questions
           </button>
           <div>
-            <p className="text-[13px] font-semibold text-muted">…or try a sample borrower</p>
+            <p className="text-[13px] font-semibold text-muted">
+              …or load a sample borrower to see a finished report
+            </p>
             <div className="mt-2 flex flex-col gap-2">
               {PERSONAS.map((p) => (
                 <button
@@ -98,13 +129,17 @@ export default function App() {
 
       {stage === 'questions' && (
         <div className="mt-6">
-          <div className="divide-y divide-rule">
+          <div className="rounded-md bg-paper2 px-3 py-2 text-[13px] text-muted">
+            <b className="text-ink">The basics.</b> Just enough to produce all four answers. You can
+            fine-tune with optional questions on the results page.
+          </div>
+          <div className="mt-2 divide-y divide-rule">
             {mustQs.map((q) => (
               <Field key={q.id} q={withLabels(q, answers)} answers={answers} onChange={setAnswer} />
             ))}
           </div>
 
-          <div className="mt-6 flex gap-2">
+          <div className="sticky bottom-0 -mx-4 mt-6 flex gap-2 border-t border-rule bg-paper/95 px-4 py-3 backdrop-blur">
             <button className="btn-ghost" onClick={() => setStage('intro')}>
               Back
             </button>
@@ -113,34 +148,84 @@ export default function App() {
               disabled={!mustDone}
               onClick={() => setStage('results')}
             >
-              {mustDone ? 'See my numbers' : `${missingRequired} required question${missingRequired > 1 ? 's' : ''} left`}
+              {mustDone ? 'See my numbers →' : `${missingRequired} required question${missingRequired > 1 ? 's' : ''} left`}
             </button>
           </div>
         </div>
       )}
 
       {stage === 'results' && result && (
-        <div className="mt-6 space-y-4">
-          <div className="no-print flex items-center gap-2 text-[13px]">
-            <button className="btn-ghost px-2 py-1" onClick={() => setStage('questions')}>
-              Edit answers
-            </button>
-            <button
-              className="btn-ghost px-2 py-1"
-              onClick={() => {
-                setAnswers({});
-                setStage('intro');
-              }}
-            >
-              Start over
-            </button>
+        <div ref={resultsRef} className="mt-6 space-y-4">
+          {/* Jump bar - a map of the report, always reachable while scrolling. */}
+          <div className="no-print sticky top-0 z-20 -mx-4 border-b border-rule bg-paper/95 px-4 py-2 backdrop-blur">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+              <nav className="flex flex-wrap gap-1.5 text-[12px]">
+                {[
+                  ['o1', 'Verdict'],
+                  ['o2', 'Amount'],
+                  ['o3', 'Rate'],
+                  ['o4', 'EMI'],
+                  ['card', 'Card'],
+                  ['quote', 'Check a quote'],
+                ].map(([id, label]) => (
+                  <button
+                    key={id}
+                    onClick={() => jump(id)}
+                    className="rounded-full border border-rule px-2.5 py-1 font-semibold text-muted transition-colors hover:border-accent hover:text-accent"
+                  >
+                    {label}
+                  </button>
+                ))}
+              </nav>
+              <div className="ml-auto flex gap-1.5 text-[12px]">
+                <button
+                  className="rounded-full border border-rule px-2.5 py-1 font-semibold text-muted hover:border-accent hover:text-accent"
+                  onClick={() => setStage('questions')}
+                >
+                  Edit answers
+                </button>
+                <button
+                  className="rounded-full border border-rule px-2.5 py-1 font-semibold text-muted hover:border-accent hover:text-accent"
+                  onClick={() => {
+                    setAnswers({});
+                    setStage('intro');
+                  }}
+                >
+                  Start over
+                </button>
+              </div>
+            </div>
           </div>
 
-          <Outputs a={result} />
-          <NegotiationCard a={result} />
-          <QuoteChecker a={result} />
+          {/* Prominent "these are wide - tighten them" prompt, above the results. */}
+          {result.missingAnswers.length > 0 && (
+            <button
+              onClick={() => jump('tighten')}
+              className="no-print flex w-full items-center gap-3 rounded-lg border border-accent/30 bg-accent-soft p-3 text-left transition-colors hover:border-accent/60"
+            >
+              <span className="text-[20px] leading-none">⟳</span>
+              <span>
+                <span className="block text-[14px] font-semibold text-ink">
+                  These are wide ranges - you have answered the basics only.
+                </span>
+                <span className="mt-0.5 block text-[13px] font-semibold text-accent">
+                  Answer {result.missingAnswers.length} more question
+                  {result.missingAnswers.length === 1 ? '' : 's'} to tighten every number below ↓
+                </span>
+              </span>
+            </button>
+          )}
 
-          <section className="card no-print p-4 sm:p-5">
+          <Outputs a={result} />
+
+          <div id="card" className="scroll-mt-16">
+            <NegotiationCard a={result} />
+          </div>
+          <div id="quote" className="scroll-mt-16">
+            <QuoteChecker a={result} />
+          </div>
+
+          <section id="tighten" className="card no-print scroll-mt-16 border-accent/30 p-4 sm:p-5">
             <button
               className="flex w-full items-center justify-between text-left"
               onClick={() => setShowMore((s) => !s)}
@@ -149,7 +234,7 @@ export default function App() {
                 Tighten these numbers · {result.missingAnswers.length} question
                 {result.missingAnswers.length === 1 ? '' : 's'} left
               </span>
-              <span className="text-accent">{showMore ? '−' : '+'}</span>
+              <span className="text-[18px] text-accent">{showMore ? '−' : '+'}</span>
             </button>
             {showMore && (
               <>

@@ -9,9 +9,19 @@ const VERDICT_STYLE: Record<Assessment['verdict']['call'], { chip: string; ring:
   do_not_borrow: { chip: 'bg-bad/10 text-bad border-bad/30', ring: 'border-bad/40', word: "Don't borrow" },
 };
 
-function Block({ tag, title, children }: { tag: string; title: string; children: ReactNode }) {
+function Block({
+  id,
+  tag,
+  title,
+  children,
+}: {
+  id?: string;
+  tag: string;
+  title: string;
+  children: ReactNode;
+}) {
   return (
-    <section className="card p-4 sm:p-5">
+    <section id={id} className="card scroll-mt-16 p-4 sm:p-5">
       <div className="flex items-baseline gap-2">
         <span className="font-mono text-[12px] font-semibold text-accent">{tag}</span>
         <h3 className="text-[17px] font-semibold text-ink">{title}</h3>
@@ -28,7 +38,7 @@ export function Outputs({ a }: { a: Assessment }) {
   return (
     <div className="space-y-3">
       {/* O1 */}
-      <section className={`card border-2 ${v.ring} p-4 sm:p-5`}>
+      <section id="o1" className={`card scroll-mt-16 border-2 ${v.ring} p-4 sm:p-5`}>
         <div className="flex items-center gap-2">
           <span className="font-mono text-[12px] font-semibold text-accent">O1</span>
           <span className={`chip ${v.chip}`}>{v.word}</span>
@@ -82,7 +92,7 @@ export function Outputs({ a }: { a: Assessment }) {
       )}
 
       {/* O2 */}
-      <Block tag="O2" title="How much you can borrow">
+      <Block id="o2" tag="O2" title="How much you can borrow">
         <div className="grid gap-3 sm:grid-cols-2">
           <div className={`rounded-md p-3 ${a.maxAmount.useThis === 'lender' ? 'bg-accent-soft' : 'bg-paper2'}`}>
             <p className="text-[12px] font-semibold uppercase tracking-wide text-muted">A lender will likely sanction</p>
@@ -133,7 +143,7 @@ export function Outputs({ a }: { a: Assessment }) {
       </Block>
 
       {/* O3 */}
-      <Block tag="O3" title="An indicative fair-rate range for you">
+      <Block id="o3" tag="O3" title="What a fair rate looks like for you">
         <p className="mb-2 text-[12px] text-muted">
           An estimate from your profile against modelled market bands - not a lender quote, and
           not a guarantee any lender will offer it. Priced against{' '}
@@ -170,7 +180,7 @@ export function Outputs({ a }: { a: Assessment }) {
       </Block>
 
       {/* O4 */}
-      <Block tag="O4" title="The EMI to agree to - and no more">
+      <Block id="o4" tag="O4" title="The EMI to agree to - and no more">
         <div className="rounded-md bg-accent-soft p-3">
           <p className="text-[12px] font-semibold uppercase tracking-wide text-muted">Monthly EMI ceiling</p>
           <p className="mt-1 text-[20px] font-semibold tabular-nums">{inr(a.outflow.emiCeiling.point)}</p>
